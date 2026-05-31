@@ -1,0 +1,25 @@
+{
+  "name": "kindergarten-interact-scenes",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate": "tsx build-assets/generate.ts",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "tsx": "^4",
+    "typescript": "^5",
+    "vite": "^5",
+    "vitest": "^2"
+  },
+  "dependencies": {
+    "dotenv": "^16"
+  }
+}
