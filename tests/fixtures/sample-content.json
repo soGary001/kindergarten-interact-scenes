@@ -1,0 +1,51 @@
+{
+  "scenes": [
+    {
+      "id": "living-room",
+      "background": "scene-living-room.svg",
+      "locations": [
+        { "id": "table",      "labelEn": "table",      "preposition": "on",    "anchor": { "xPct": 20, "yPct": 70 } },
+        { "id": "sofa",       "labelEn": "sofa",       "preposition": "on",    "anchor": { "xPct": 50, "yPct": 72 } },
+        { "id": "windowsill", "labelEn": "windowsill", "preposition": "on",    "anchor": { "xPct": 80, "yPct": 35 } },
+        { "id": "bookshelf",  "labelEn": "bookshelf",  "preposition": "on",    "anchor": { "xPct": 12, "yPct": 30 } },
+        { "id": "wardrobe",   "labelEn": "wardrobe",   "preposition": "in",    "anchor": { "xPct": 88, "yPct": 65 } },
+        { "id": "pillow",     "labelEn": "pillow",     "preposition": "under", "anchor": { "xPct": 35, "yPct": 50 } }
+      ]
+    },
+    {
+      "id": "boy-room",
+      "background": "scene-boy-room.svg",
+      "locations": [
+        { "id": "door",       "labelEn": "door",       "preposition": "by", "anchor": { "xPct": 15, "yPct": 55 } },
+        { "id": "grass",      "labelEn": "grass",      "preposition": "on", "anchor": { "xPct": 78, "yPct": 80 } },
+        { "id": "shelf",      "labelEn": "shelf",      "preposition": "on", "anchor": { "xPct": 40, "yPct": 30 } },
+        { "id": "carpet",     "labelEn": "carpet",     "preposition": "on", "anchor": { "xPct": 55, "yPct": 82 } }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "id": "grandma",
+      "nameEn": "Grandma",
+      "portrait": "char-grandma.svg",
+      "sceneId": "living-room",
+      "items": [
+        { "id": "glasses", "word": "glasses", "isPlural": true, "sprite": "item-glasses.svg" }
+      ],
+      "questionAudio": { "glasses": "" },
+      "thanksAudio": { "1": "", "2": "", "3": "", "4": "", "5": "", "6": "", "7": "", "8": "", "9": "", "10": "" }
+    },
+    {
+      "id": "boy",
+      "nameEn": "Little Boy",
+      "portrait": "char-boy.svg",
+      "sceneId": "boy-room",
+      "items": [
+        { "id": "football", "word": "football", "isPlural": false, "sprite": "item-football.svg" },
+        { "id": "toys",     "word": "toys",     "isPlural": true,  "sprite": "item-toys.svg" }
+      ],
+      "questionAudio": { "football": "", "toys": "" },
+      "thanksAudio": { "1": "", "2": "", "3": "", "4": "", "5": "", "6": "", "7": "", "8": "", "9": "", "10": "" }
+    }
+  ]
+}
