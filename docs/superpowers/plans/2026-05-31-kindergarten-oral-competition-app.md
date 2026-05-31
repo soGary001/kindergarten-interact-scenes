@@ -33,7 +33,7 @@ src/
     memphis.css               # Memphis/pastel visual system
 public/                       # Vite copies this verbatim into dist/ (served at site root)
   assets/
-    audio/                    # *.mp3 (generated on dev machine, COMMITTED so clean clones build offline)
+    audio/                    # *.wav (generated on dev machine, COMMITTED so clean clones build offline)
     img/                      # backgrounds, characters, item sprites
 tests/fixtures/
   sample-content.json         # frozen 2-character fixture for tests (decoupled from src/content.json)
@@ -60,44 +60,26 @@ Two responsibilities are kept apart: **runtime** (`src/`, consumes `content.json
 
 ---
 
-## Pre-flight — Confirm the Mimo API reality
+## Pre-flight — Mimo API reality (PROBED & CONFIRMED 2026-05-31)
 
-### Task -1: Live Mimo API probe (do this first)
+### Task -1: Live Mimo API probe — ✅ DONE
 
-**Goal:** Replace guesses with facts before any code depends on them. The spec lists `mimo-v2.5-tts-voicedesign` / `mimo-v2.5-tts-voiceclone` / `mimo-v2.5-tts` — these may NOT be a plain OpenAI `/audio/speech` + catalog-`voice` shape. Confirm the truth.
+This was run live against `https://token-plan-cn.xiaomimimo.com/v1`. Findings are **authoritative**; Tasks 12/14/15/16 below are already written to them. Do NOT re-derive — just implement to these facts.
 
-**Files:** none committed — this is throwaway exploration. Use the key from a shell env var, never paste it into a file.
+**Confirmed contract:**
 
-- [ ] **Step 1: Probe the chat endpoint**
+1. **Chat / text generation** — standard OpenAI shape:
+   - `POST /v1/chat/completions`, body `{ model, messages:[{role:"user", content}] }`.
+   - Working text model id: **`mimo-v2.5`**. Reply is in `choices[0].message.content` (clean string; there is also a `reasoning_content` field — ignore it).
 
-```bash
-export MIMO_KEY='tp-...'   # the real key, shell-only
-curl -sS https://token-plan-cn.xiaomimimo.com/v1/chat/completions \
-  -H "Authorization: Bearer $MIMO_KEY" -H "Content-Type: application/json" \
-  -d '{"model":"mimo-v2.5","messages":[{"role":"user","content":"Say: Where are my glasses?"}]}'
-```
-Expected: a JSON body with `choices[0].message.content`. Record the working **text model id**.
+2. **TTS** — NOT `/audio/speech` (that path is 404). TTS runs through the SAME `/v1/chat/completions` endpoint with a tts model:
+   - **Plain voice** (`mimo-v2.5-tts`): `messages:[{role:"assistant", content:<text to speak>}]` → one default voice.
+   - **Designed voice** (`mimo-v2.5-tts-voicedesign`, what we use): `messages:[{role:"user", content:<voice description>}, {role:"assistant", content:<text to speak>}]` → a distinct voice per description. A non-empty user (description) AND assistant (text) message are both required, else HTTP 400.
+   - **Audio is returned as base64-encoded WAV** in `choices[0].message.audio.data` (NOT a binary body, NOT mp3). Decode base64 → bytes starting with `RIFF` → write as **`.wav`**. (~230 KB per short clip; 61 clips ≈ ~14 MB committed — acceptable; use Git LFS only if it grows.)
 
-- [ ] **Step 2: Probe TTS — try the OpenAI-style speech endpoint first**
+3. **Per-character voice mechanism:** `voicedesign` description strings (not catalog ids). Each character gets a short English voice-description string (see `voiceByCharacter` in Task 15).
 
-```bash
-curl -sS https://token-plan-cn.xiaomimimo.com/v1/audio/speech \
-  -H "Authorization: Bearer $MIMO_KEY" -H "Content-Type: application/json" \
-  -d '{"model":"mimo-v2.5-tts","input":"Hello there!","voice":"default","response_format":"mp3"}' \
-  --output /tmp/mimo-probe.mp3 -w '%{http_code}\n'
-file /tmp/mimo-probe.mp3
-```
-Expected: HTTP 200 and `/tmp/mimo-probe.mp3` is real audio. **If this fails**, the TTS API is not OpenAI-shaped — read Mimo's docs and record the real endpoint, request body (especially how voice is specified: a catalog id, OR a `voicedesign` text description, OR a `voiceclone` reference sample), response format, and model id.
-
-- [ ] **Step 3: Determine the per-character voice mechanism**
-
-Decide and record how to get 5 distinct voices (warm grandma / energetic boy / sweet girl / calm dad / gentle mom):
-- If catalog voices exist → record the 5 voice ids → these feed `voiceByCharacter` in Task 15.
-- If `voicedesign` (text-described voices) → the "voice" becomes a **description string** per character; note that `mimo-client.tts()` and `voiceByCharacter` must carry descriptions, not ids, and `.env` model becomes `mimo-v2.5-tts-voicedesign`.
-
-- [ ] **Step 4: Write down the confirmed facts**
-
-Record in a scratch note (or directly update the relevant later steps): real text model id, real TTS endpoint + body shape + model id, voice mechanism + the 5 voice ids/descriptions. Tasks 14, 15, and `.env.example` (Task 14) must be written to THESE facts, not the placeholder guesses. No commit — this task produces knowledge, not code.
+Because audio is WAV, every `.mp3` in the original draft is now **`.wav`** (enumeration in Task 12, generator in Task 15, expectations in Task 16). No code reads a hard-coded extension except `content-config.ts`, which is the single source.
 
 ---
 
@@ -217,7 +199,7 @@ node_modules/
 .DS_Store
 ```
 
-Verify: `git check-ignore build-assets/.env public/assets/audio/x.mp3` should print only the first path (secrets ignored, audio tracked).
+Verify: `git check-ignore build-assets/.env public/assets/audio/x.wav` should print only the first path (secrets ignored, audio tracked).
 
 - [ ] **Step 3: Install dependencies**
 
@@ -1105,14 +1087,14 @@ describe("AudioPlayer", () => {
       .spyOn(HTMLMediaElement.prototype, "play")
       .mockResolvedValue(undefined as unknown as void);
     const player = new AudioPlayer();
-    await player.play("grandma-q-glasses.mp3");
+    await player.play("grandma-q-glasses.wav");
     expect(playSpy).toHaveBeenCalledOnce();
   });
 
   it("swallows playback errors (e.g. missing file) without throwing", async () => {
     vi.spyOn(HTMLMediaElement.prototype, "play").mockRejectedValue(new Error("no file"));
     const player = new AudioPlayer();
-    await expect(player.play("missing.mp3")).resolves.toBeUndefined();
+    await expect(player.play("missing.wav")).resolves.toBeUndefined();
   });
 });
 ```
@@ -1474,17 +1456,17 @@ export interface AudioLine {
   characterId: string;
   kind: AudioKind;
   key: string;        // itemId for question; "1".."10" for thanks
-  filename: string;   // output mp3 name
+  filename: string;   // output audio filename (.wav)
 }
 
 export function enumerateAudioLines(cfg: ContentConfig): AudioLine[] {
   const lines: AudioLine[] = [];
   for (const c of cfg.characters) {
     for (const item of c.items) {
-      lines.push({ characterId: c.id, kind: "question", key: item.id, filename: `${c.id}-q-${item.id}.mp3` });
+      lines.push({ characterId: c.id, kind: "question", key: item.id, filename: `${c.id}-q-${item.id}.wav` });
     }
     for (let n = 1; n <= 10; n++) {
-      lines.push({ characterId: c.id, kind: "thanks", key: String(n), filename: `${c.id}-t-${n}.mp3` });
+      lines.push({ characterId: c.id, kind: "thanks", key: String(n), filename: `${c.id}-t-${n}.wav` });
     }
   }
   return lines;
@@ -1614,17 +1596,45 @@ describe("MimoClient.chat", () => {
 });
 
 describe("MimoClient.tts", () => {
-  it("returns audio bytes from the speech endpoint", async () => {
-    const bytes = new Uint8Array([1, 2, 3]);
+  // Confirmed contract (Task -1): TTS goes through /chat/completions; audio comes back
+  // base64 in choices[0].message.audio.data. voicedesign needs user(description)+assistant(text).
+  it("posts to /chat/completions with user(description)+assistant(text) and decodes base64 audio", async () => {
+    const wavBytes = new Uint8Array([0x52, 0x49, 0x46, 0x46]); // "RIFF"
+    const b64 = Buffer.from(wavBytes).toString("base64");
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      arrayBuffer: async () => bytes.buffer,
+      json: async () => ({ choices: [{ message: { audio: { data: b64 } } }] }),
     });
     const c = new MimoClient({ baseUrl: "https://x/v1", apiKey: "k", fetchImpl: fetchMock as any });
-    const out = await c.tts("mimo-v2.5-tts", "hello", "voice-1");
-    expect(new Uint8Array(out)).toEqual(bytes);
-    const [url] = fetchMock.mock.calls[0];
-    expect(url).toBe("https://x/v1/audio/speech");
+    const out = await c.tts("mimo-v2.5-tts-voicedesign", "Hi!", "a warm grandma voice");
+    expect(new Uint8Array(out)).toEqual(wavBytes);
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("https://x/v1/chat/completions");
+    const body = JSON.parse((init as any).body);
+    expect(body.model).toBe("mimo-v2.5-tts-voicedesign");
+    expect(body.messages).toEqual([
+      { role: "user", content: "a warm grandma voice" },
+      { role: "assistant", content: "Hi!" },
+    ]);
+  });
+
+  it("omits the user(description) message when no voice description is given (plain tts)", async () => {
+    const b64 = Buffer.from(new Uint8Array([1])).toString("base64");
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ choices: [{ message: { audio: { data: b64 } } }] }),
+    });
+    const c = new MimoClient({ baseUrl: "https://x/v1", apiKey: "k", fetchImpl: fetchMock as any });
+    await c.tts("mimo-v2.5-tts", "Hi!");
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as any).body);
+    expect(body.messages).toEqual([{ role: "assistant", content: "Hi!" }]);
+  });
+
+  it("throws when no audio data is returned", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ choices: [{ message: {} }] }) });
+    const c = new MimoClient({ baseUrl: "https://x/v1", apiKey: "k", fetchImpl: fetchMock as any });
+    await expect(c.tts("m", "hi", "v")).rejects.toThrow(/audio/i);
   });
 });
 ```
@@ -1651,44 +1661,56 @@ export class MimoClient {
     this.fetchImpl = opts.fetchImpl ?? fetch;
   }
 
-  async chat(model: string, prompt: string): Promise<string> {
+  private async post(body: unknown): Promise<any> {
     const res = await this.fetchImpl(`${this.opts.baseUrl}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${this.opts.apiKey}` },
-      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], temperature: 0.8 }),
+      body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error(`chat failed: ${res.status} ${await res.text()}`);
-    const data = await res.json();
+    if (!res.ok) throw new Error(`request failed: ${res.status} ${await res.text?.() ?? ""}`);
+    return res.json();
+  }
+
+  /** Text generation (mimo-v2.5). Returns the assistant message content. */
+  async chat(model: string, prompt: string): Promise<string> {
+    const data = await this.post({ model, messages: [{ role: "user", content: prompt }], temperature: 0.8 });
     return (data.choices?.[0]?.message?.content ?? "").trim();
   }
 
-  async tts(model: string, input: string, voice: string): Promise<ArrayBuffer> {
-    const res = await this.fetchImpl(`${this.opts.baseUrl}/audio/speech`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${this.opts.apiKey}` },
-      body: JSON.stringify({ model, input, voice, response_format: "mp3" }),
-    });
-    if (!res.ok) throw new Error(`tts failed: ${res.status}`);
-    return await res.arrayBuffer();
+  /**
+   * TTS — runs through /chat/completions (confirmed in Task -1).
+   * For voicedesign, pass `voiceDescription`; it becomes a user message before the
+   * assistant message that holds the text to speak. Returns decoded WAV bytes.
+   */
+  async tts(model: string, text: string, voiceDescription?: string): Promise<ArrayBuffer> {
+    const messages = voiceDescription
+      ? [{ role: "user", content: voiceDescription }, { role: "assistant", content: text }]
+      : [{ role: "assistant", content: text }];
+    const data = await this.post({ model, messages });
+    const b64: string | undefined = data.choices?.[0]?.message?.audio?.data;
+    if (!b64) throw new Error("tts: no audio data in response");
+    const buf = Buffer.from(b64, "base64");
+    // Return a clean ArrayBuffer slice (Buffer may be a view into a larger pool).
+    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
   }
 }
 ```
 
-`build-assets/.env.example` (set the model ids to whatever **Task -1 (probe)** confirmed — the values below are the starting guess; the spec mentioned `mimo-v2.5-tts-voicedesign`, so this may need to change):
+`build-assets/.env.example` (model ids confirmed live in Task -1):
 
 ```
 MIMO_BASE_URL=https://token-plan-cn.xiaomimimo.com/v1
 MIMO_API_KEY=replace-with-your-key
 MIMO_TEXT_MODEL=mimo-v2.5
-MIMO_TTS_MODEL=mimo-v2.5-tts
+MIMO_TTS_MODEL=mimo-v2.5-tts-voicedesign
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `npx vitest run tests/mimo-client.test.ts`
-Expected: PASS (3 tests).
+Expected: PASS (5 tests: 2 chat + 3 tts).
 
-> **Note:** This client/test encodes the *assumed* OpenAI-compatible shape. **Task -1 (probe) is authoritative** — if the real TTS uses a `voicedesign` description instead of a catalog `voice`, or a different endpoint/body, update `tts()` (and this test) to match. The client isolates the API so only this file changes.
+> **Note:** This client encodes the contract confirmed live in Task -1 (TTS via `/chat/completions`, base64 WAV in `message.audio.data`, voicedesign = user-description + assistant-text). The client isolates the API so only this file changes if Mimo's shape ever shifts.
 
 - [ ] **Step 5: Commit**
 
@@ -1729,8 +1751,8 @@ describe("buildManifest", () => {
     const audioByLine = new Map(lines.map((l) => [`${l.characterId}:${l.kind}:${l.key}`, l.filename]));
     const manifest = buildManifest(CONTENT_CONFIG, audioByLine);
     const grandma = manifest.characters.find((c) => c.id === "grandma")!;
-    expect(grandma.questionAudio.glasses).toBe("grandma-q-glasses.mp3");
-    expect(grandma.thanksAudio["7"]).toBe("grandma-t-7.mp3");
+    expect(grandma.questionAudio.glasses).toBe("grandma-q-glasses.wav");
+    expect(grandma.thanksAudio["7"]).toBe("grandma-t-7.wav");
   });
 });
 ```
@@ -1756,7 +1778,7 @@ import type { Content, CharacterDef } from "../src/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SRC = resolve(__dirname, "../src");                       // content.json lives here (imported)
-const AUDIO_DIR = resolve(__dirname, "../public/assets/audio"); // mp3s live here (served via public/)
+const AUDIO_DIR = resolve(__dirname, "../public/assets/audio"); // .wav clips live here (served via public/)
 
 /** Pure: assemble the runtime manifest from config + planned audio filenames. */
 export function buildManifest(cfg: ContentConfig, audioByLine: Map<string, string>): Content {
@@ -1782,7 +1804,7 @@ export function buildManifest(cfg: ContentConfig, audioByLine: Map<string, strin
   return { scenes, characters };
 }
 
-/** Live: call Mimo for each line, write mp3s, write content.json. */
+/** Live: call Mimo for each line, write .wav clips, write content.json. */
 async function main(): Promise<void> {
   dotenv.config({ path: resolve(__dirname, ".env") });
   const { MIMO_BASE_URL, MIMO_API_KEY, MIMO_TEXT_MODEL, MIMO_TTS_MODEL } = process.env;
@@ -1790,13 +1812,16 @@ async function main(): Promise<void> {
 
   const client = new MimoClient({ baseUrl: MIMO_BASE_URL, apiKey: MIMO_API_KEY });
   const textModel = MIMO_TEXT_MODEL ?? "mimo-v2.5";
-  const ttsModel = MIMO_TTS_MODEL ?? "mimo-v2.5-tts";
+  const ttsModel = MIMO_TTS_MODEL ?? "mimo-v2.5-tts-voicedesign";
 
-  // One distinct "voice" per character. NOTE: whether these are catalog voice ids OR
-  // voicedesign description strings is decided in Task -1 (Live Mimo API probe).
-  // Replace these values with whatever the probe confirmed.
+  // voicedesign description strings (confirmed mechanism, Task -1): each becomes the
+  // user message that designs the character's voice. Tune wording to taste.
   const voiceByCharacter: Record<string, string> = {
-    grandma: "female_warm", boy: "child_boy", girl: "child_girl", dad: "male_calm", mom: "female_gentle",
+    grandma: "A warm, gentle, kind elderly grandmother. Slow, soft, caring tone.",
+    boy: "An energetic, cheerful young boy. Bright, playful, lively tone.",
+    girl: "A sweet, curious little girl. Light, gentle, happy tone.",
+    dad: "A calm, friendly adult man. Warm, steady, reassuring tone.",
+    mom: "A kind, gentle adult woman. Soft, warm, caring tone.",
   };
 
   const lines = enumerateAudioLines(CONTENT_CONFIG);
@@ -1813,7 +1838,7 @@ async function main(): Promise<void> {
     } else {
       spoken = await client.chat(textModel, thanksPrompt(ch.persona, Number(line.key)));
     }
-    const audio = await client.tts(ttsModel, spoken, voiceByCharacter[ch.id] ?? "default");
+    const audio = await client.tts(ttsModel, spoken, voiceByCharacter[ch.id]);
     await writeFile(resolve(audioDir, line.filename), Buffer.from(audio));
     audioByLine.set(`${line.characterId}:${line.kind}:${line.key}`, line.filename);
     console.log(`✓ ${line.filename}: ${spoken}`);
@@ -1844,11 +1869,11 @@ git commit -m "feat: asset generator orchestration (pure manifest + live main)"
 
 ### Task 16: First live generation run (dev machine only)
 
-This runs ONCE on the developer's machine that holds the key. The outputs (`src/content.json` + mp3s) are **committed**, so CI and clean clones never need the key.
+This runs ONCE on the developer's machine that holds the key. The outputs (`src/content.json` + `.wav` clips) are **committed**, so CI and clean clones never need the key.
 
 **Files:**
 - Create: `build-assets/.env` (NOT committed — gitignored)
-- Modify/create (committed): `src/content.json`, `public/assets/audio/*.mp3`
+- Modify/create (committed): `src/content.json`, `public/assets/audio/*.wav`
 
 - [ ] **Step 1: Create the .env from the example with the real key**
 
@@ -1863,7 +1888,7 @@ Verify it is ignored: `git check-ignore build-assets/.env` → should print the 
 - [ ] **Step 2: Run the generator for real**
 
 Run: `npm run generate`
-Expected: prints `✓ <file>: <spoken line>` for each of the **61** lines (question lines = 1+2+2+3+3 = 11; thanks lines = 5×10 = 50) and `✓ wrote src/content.json`. mp3 files appear under `public/assets/audio/`.
+Expected: prints `✓ <file>: <spoken line>` for each of the **61** lines (question lines = 1+2+2+3+3 = 11; thanks lines = 5×10 = 50) and `✓ wrote src/content.json`. `.wav` files appear under `public/assets/audio/`.
 
 - [ ] **Step 3: If the API shape differs, fix the client and rerun**
 
@@ -1876,7 +1901,7 @@ Run: `npm run dev`, open the app, press Start. Confirm the character's question 
 - [ ] **Step 5: Commit the generated manifest AND audio**
 
 ```bash
-git add src/content.json public/assets/audio/*.mp3
+git add src/content.json public/assets/audio/*.wav
 git commit -m "chore: generate content manifest + TTS audio from Mimo"
 ```
 
