@@ -4,9 +4,11 @@
 
 **Goal:** Build an offline, no-API-key desktop app (Windows `.exe` + Mac `.dmg`) where a child taps "Start", a randomly chosen AI character asks "Where is my X?" in an illustrated scene, the child answers aloud, and the character thanks them and gifts a 1–10 lucky number.
 
-**Architecture:** Pure front-end web app (TypeScript + Vite) wrapped in a Tauri v2 shell. All spoken lines, audio, and art are **pre-generated at build time** by a separate Node script that calls Mimo (text + TTS); the shipped app contains only static assets — **no API key, no network**. A `content.json` manifest drives random selection and rendering at runtime. The app degrades gracefully (shows subtitle, skips audio) when audio files are absent, so it is fully runnable with placeholder content before the generation pipeline runs.
+**Architecture:** Pure front-end web app (TypeScript + Vite) wrapped in a Tauri v2 shell. All spoken lines, audio, and art are **pre-generated once on the developer's machine** by a separate Node script that calls Mimo (text + TTS), then **committed to the repo**; the shipped app contains only static assets — **no API key, no network**. Because assets are committed, CI only *builds* — the API key never touches CI, and a clean clone builds an identical, fully-offline app. A `content.json` manifest drives random selection and rendering at runtime. The app degrades gracefully (shows subtitle, skips audio) when an audio file is missing, so it is runnable with placeholder content before the generation pipeline runs.
 
-**Tech Stack:** TypeScript, Vite, Vitest (tests), Tauri v2 (desktop shell), Node (build-assets pipeline), Mimo OpenAI-compatible API (build-time only), GitHub Actions + `tauri-action` (cross-platform packaging).
+**Tech Stack:** TypeScript, Vite, Vitest (tests), Tauri v2 (desktop shell), Node (build-assets pipeline, dev-machine only), Mimo OpenAI-compatible API (build-time only), GitHub Actions + `tauri-action` (cross-platform packaging, build-only).
+
+> **Pre-flight (do this BEFORE Task 0):** The Mimo TTS/chat request & response shapes, the valid `voice` mechanism, and the exact model ids are assumptions in this plan. See **Task -1 (Live Mimo API probe)** below — run it first and adjust `mimo-client.ts`/`.env.example`/`voiceByCharacter` to the confirmed reality. Everything downstream of audio depends on it.
 
 ---
 
@@ -26,12 +28,15 @@ src/
   render.ts                   # renders a ViewModel into the DOM
   audio-player.ts             # plays a clip by id; no-op if missing
   content.ts                  # loadContent(): parse/validate content.json
-  content.json                # runtime manifest (sample now; generated later)
-  assets/
-    audio/                    # *.mp3 (generated; gitignored except .gitkeep)
-    img/                      # backgrounds, characters, item sprites (placeholder now)
+  content.json                # runtime manifest (sample now; generated & committed later)
   styles/
     memphis.css               # Memphis/pastel visual system
+public/                       # Vite copies this verbatim into dist/ (served at site root)
+  assets/
+    audio/                    # *.mp3 (generated on dev machine, COMMITTED so clean clones build offline)
+    img/                      # backgrounds, characters, item sprites
+tests/fixtures/
+  sample-content.json         # frozen 2-character fixture for tests (decoupled from src/content.json)
 build-assets/
   content-config.ts           # canonical data: characters, items, scenes, locations, line specs
   prompts.ts                  # persona prompt builders for the text model
@@ -52,6 +57,47 @@ docs/RUNBOOK.md               # how to generate assets, build, and operate at th
 ```
 
 Two responsibilities are kept apart: **runtime** (`src/`, consumes `content.json` + assets) and **build pipeline** (`build-assets/`, produces them). They meet only at the `content.json` schema defined in `src/types.ts`.
+
+---
+
+## Pre-flight — Confirm the Mimo API reality
+
+### Task -1: Live Mimo API probe (do this first)
+
+**Goal:** Replace guesses with facts before any code depends on them. The spec lists `mimo-v2.5-tts-voicedesign` / `mimo-v2.5-tts-voiceclone` / `mimo-v2.5-tts` — these may NOT be a plain OpenAI `/audio/speech` + catalog-`voice` shape. Confirm the truth.
+
+**Files:** none committed — this is throwaway exploration. Use the key from a shell env var, never paste it into a file.
+
+- [ ] **Step 1: Probe the chat endpoint**
+
+```bash
+export MIMO_KEY='tp-...'   # the real key, shell-only
+curl -sS https://token-plan-cn.xiaomimimo.com/v1/chat/completions \
+  -H "Authorization: Bearer $MIMO_KEY" -H "Content-Type: application/json" \
+  -d '{"model":"mimo-v2.5","messages":[{"role":"user","content":"Say: Where are my glasses?"}]}'
+```
+Expected: a JSON body with `choices[0].message.content`. Record the working **text model id**.
+
+- [ ] **Step 2: Probe TTS — try the OpenAI-style speech endpoint first**
+
+```bash
+curl -sS https://token-plan-cn.xiaomimimo.com/v1/audio/speech \
+  -H "Authorization: Bearer $MIMO_KEY" -H "Content-Type: application/json" \
+  -d '{"model":"mimo-v2.5-tts","input":"Hello there!","voice":"default","response_format":"mp3"}' \
+  --output /tmp/mimo-probe.mp3 -w '%{http_code}\n'
+file /tmp/mimo-probe.mp3
+```
+Expected: HTTP 200 and `/tmp/mimo-probe.mp3` is real audio. **If this fails**, the TTS API is not OpenAI-shaped — read Mimo's docs and record the real endpoint, request body (especially how voice is specified: a catalog id, OR a `voicedesign` text description, OR a `voiceclone` reference sample), response format, and model id.
+
+- [ ] **Step 3: Determine the per-character voice mechanism**
+
+Decide and record how to get 5 distinct voices (warm grandma / energetic boy / sweet girl / calm dad / gentle mom):
+- If catalog voices exist → record the 5 voice ids → these feed `voiceByCharacter` in Task 15.
+- If `voicedesign` (text-described voices) → the "voice" becomes a **description string** per character; note that `mimo-client.tts()` and `voiceByCharacter` must carry descriptions, not ids, and `.env` model becomes `mimo-v2.5-tts-voicedesign`.
+
+- [ ] **Step 4: Write down the confirmed facts**
+
+Record in a scratch note (or directly update the relevant later steps): real text model id, real TTS endpoint + body shape + model id, voice mechanism + the 5 voice ids/descriptions. Tasks 14, 15, and `.env.example` (Task 14) must be written to THESE facts, not the placeholder guesses. No commit — this task produces knowledge, not code.
 
 ---
 
@@ -113,10 +159,10 @@ Two responsibilities are kept apart: **runtime** (`src/`, consumes `content.json
 }
 ```
 
-`vite.config.ts`:
+`vite.config.ts` (import `defineConfig` from **`vitest/config`**, not `vite` — the Vite export's type rejects the `test` key and would fail `tsc --noEmit`):
 
 ```ts
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   // Tauri expects a fixed dev port
@@ -153,25 +199,45 @@ export default defineConfig({
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = "<h1>English Fun Time</h1>";
 ```
 
-- [ ] **Step 2: Install dependencies**
+- [ ] **Step 2: Ensure `.gitignore` is correct**
+
+This repo already has a `.gitignore`; confirm it contains exactly these rules (it must ignore secrets but **must NOT ignore `public/assets/audio/` or `public/assets/img/`**, which are committed assets):
+
+`.gitignore`:
+
+```
+.superpowers/
+.env
+.env.*
+!.env.example
+/dist/
+/build/
+/src-tauri/target/
+node_modules/
+.DS_Store
+```
+
+Verify: `git check-ignore build-assets/.env public/assets/audio/x.mp3` should print only the first path (secrets ignored, audio tracked).
+
+- [ ] **Step 3: Install dependencies**
 
 Run: `npm install`
 Expected: completes without errors; `node_modules/` created.
 
-- [ ] **Step 3: Verify dev server boots**
+- [ ] **Step 4: Verify dev server boots**
 
 Run: `npm run dev` then open `http://localhost:1420` (Ctrl-C to stop).
 Expected: page shows "English Fun Time".
 
-- [ ] **Step 4: Verify the test runner works**
+- [ ] **Step 5: Verify the test runner works**
 
 Run: `npm test`
 Expected: Vitest runs and reports "No test files found" (exit 0) — runner is wired.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add package.json package-lock.json tsconfig.json vite.config.ts index.html src/main.ts
+git add package.json package-lock.json tsconfig.json vite.config.ts index.html src/main.ts .gitignore
 git commit -m "chore: scaffold Vite + TypeScript + Vitest project"
 ```
 
@@ -337,10 +403,10 @@ git add src/content.ts tests/content.test.ts
 git commit -m "feat: content manifest loader with validation"
 ```
 
-### Task 3: Sample content.json + asset folders
+### Task 3: Sample content.json + test fixture + asset folders
 
 **Files:**
-- Create: `src/content.json`, `src/assets/audio/.gitkeep`, `src/assets/img/.gitkeep`
+- Create: `src/content.json`, `tests/fixtures/sample-content.json`, `public/assets/audio/.gitkeep`, `public/assets/img/.gitkeep`
 
 - [ ] **Step 1: Write a sample manifest covering two characters**
 
@@ -400,21 +466,30 @@ git commit -m "feat: content manifest loader with validation"
 }
 ```
 
-- [ ] **Step 2: Create asset folders**
+- [ ] **Step 2: Freeze the same content as a test fixture**
 
-Run: `mkdir -p src/assets/audio src/assets/img && touch src/assets/audio/.gitkeep src/assets/img/.gitkeep`
+Tests must NOT import `src/content.json` directly — Phase 8 regenerates that file (5 characters, full location lists), which would silently break index-based selection tests. Copy the sample to a frozen fixture that tests own:
 
-- [ ] **Step 3: Verify the sample loads**
+Run: `mkdir -p tests/fixtures && cp src/content.json tests/fixtures/sample-content.json`
 
-Add a temporary check to `tests/content.test.ts` is unnecessary — instead run:
-Run: `npx tsx -e "import('./src/content.ts').then(async m => m.loadContent((await import('./src/content.json', { with: { type: 'json' } })).default))" && echo OK`
-Expected: prints `OK` (no validation error).
+(From here on, `selection`, `app-controller`, and `render` tests import `../tests/fixtures/sample-content.json`. The `content.test.ts` already uses an inline object, so it's unaffected.)
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 3: Create runtime asset folders under `public/`**
+
+Vite copies `public/` verbatim into `dist/`, so these are the paths that survive the production build the Tauri app ships. (Do NOT put runtime media under `src/` — `/src/...` URLs 404 in the built app.)
+
+Run: `mkdir -p public/assets/audio public/assets/img && touch public/assets/audio/.gitkeep public/assets/img/.gitkeep`
+
+- [ ] **Step 4: Verify the sample loads**
+
+Run: `npx tsx -e "import('./src/content.ts').then(async m => m.loadContent((await import('./src/content.json', { with: { type: 'json' } })).default)).then(() => console.log('OK'))"`
+Expected: prints `OK`. (Requires Node ≥ 20.10 for JSON import attributes; CI pins this in Task 17.)
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/content.json src/assets/audio/.gitkeep src/assets/img/.gitkeep
-git commit -m "feat: add sample content manifest and asset folders"
+git add src/content.json tests/fixtures/sample-content.json public/assets/audio/.gitkeep public/assets/img/.gitkeep
+git commit -m "feat: add sample content manifest, test fixture, and public asset folders"
 ```
 
 ---
@@ -509,7 +584,7 @@ git commit -m "feat: question/answer text builders"
 import { describe, it, expect } from "vitest";
 import { selectRound, pickLuckyNumber } from "../src/selection";
 import { loadContent } from "../src/content";
-import sample from "../src/content.json";
+import sample from "./fixtures/sample-content.json";
 
 const content = loadContent(sample);
 
@@ -624,7 +699,7 @@ git commit -m "feat: random round selection with injectable RNG"
 import { describe, it, expect, vi } from "vitest";
 import { AppController } from "../src/app-controller";
 import { loadContent } from "../src/content";
-import sample from "../src/content.json";
+import sample from "./fixtures/sample-content.json";
 
 const content = loadContent(sample);
 
@@ -753,7 +828,7 @@ git commit -m "feat: app state machine emitting view models"
 
 **Files:**
 - Create: `src/styles/memphis.css`
-- Create placeholder SVGs: `src/assets/img/scene-living-room.svg`, `scene-boy-room.svg`, `char-grandma.svg`, `char-boy.svg`, `item-glasses.svg`, `item-football.svg`, `item-toys.svg`
+- Create placeholder SVGs under `public/assets/img/` for **all 3 scenes, all 5 characters, and all 11 items** (random selection in the generated app can pick any character, so every referenced image must exist or it shows broken).
 
 - [ ] **Step 1: Write the visual system**
 
@@ -816,65 +891,58 @@ body {
 @keyframes fall { 0% { transform: translateY(-10vh) rotate(0); } 100% { transform: translateY(110vh) rotate(360deg); } }
 ```
 
-- [ ] **Step 2: Create simple placeholder SVGs**
+- [ ] **Step 2: Generate emoji placeholder SVGs for every referenced asset**
 
-Create each file below (real AI art replaces them in Phase 10; these keep the app runnable now).
+These keep the app fully runnable for all 5 characters before real art lands in Task 18. Create `build-assets/make-placeholders.sh` and run it once:
 
-`src/assets/img/scene-living-room.svg`:
+`build-assets/make-placeholders.sh`:
 
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
-  <rect width="1600" height="900" fill="#FFF7E6"/>
-  <rect y="640" width="1600" height="260" fill="#F3D9B1"/>
-  <text x="800" y="80" font-size="48" text-anchor="middle" fill="#999">Living Room (placeholder)</text>
-</svg>
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+DIR="public/assets/img"
+mkdir -p "$DIR"
+
+scene() { # name, bg-fill, emoji-strip
+  printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="%s"/><text x="800" y="80" font-size="44" text-anchor="middle" fill="#999">%s (placeholder)</text></svg>' "$2" "$1" > "$DIR/scene-$1.svg"
+}
+emoji() { # filename, emoji, viewbox
+  printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %s"><text x="50%%" y="78%%" font-size="100" text-anchor="middle">%s</text></svg>' "$3" "$2" > "$DIR/$1.svg"
+}
+
+scene "living-room" "#FFF7E6"
+scene "boy-room"     "#E8F7FF"
+scene "girl-outdoor" "#EAF7EA"
+
+emoji "char-grandma" "👵" "200 260"
+emoji "char-boy"     "👦" "200 260"
+emoji "char-girl"    "👧" "200 260"
+emoji "char-dad"     "👨" "200 260"
+emoji "char-mom"     "👩" "200 260"
+
+emoji "item-glasses"   "👓" "120 120"
+emoji "item-football"  "⚽" "120 120"
+emoji "item-toys"      "🧸" "120 120"
+emoji "item-puppy"     "🐶" "120 120"
+emoji "item-kitten"    "🐱" "120 120"
+emoji "item-keys"      "🔑" "120 120"
+emoji "item-wallet"    "👛" "120 120"
+emoji "item-newspaper" "📰" "120 120"
+emoji "item-handbag"   "👜" "120 120"
+emoji "item-necklace"  "📿" "120 120"
+emoji "item-ring"      "💍" "120 120"
+
+echo "✓ wrote placeholder SVGs to $DIR"
 ```
 
-`src/assets/img/scene-boy-room.svg`:
-
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
-  <rect width="1600" height="900" fill="#E8F7FF"/>
-  <rect x="1100" y="500" width="500" height="400" fill="#BFE6A0"/>
-  <text x="800" y="80" font-size="48" text-anchor="middle" fill="#999">Boy Room + Grass (placeholder)</text>
-</svg>
-```
-
-`src/assets/img/char-grandma.svg`:
-
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260"><text x="100" y="150" font-size="120" text-anchor="middle">👵</text></svg>
-```
-
-`src/assets/img/char-boy.svg`:
-
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260"><text x="100" y="150" font-size="120" text-anchor="middle">👦</text></svg>
-```
-
-`src/assets/img/item-glasses.svg`:
-
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><text x="60" y="90" font-size="90" text-anchor="middle">👓</text></svg>
-```
-
-`src/assets/img/item-football.svg`:
-
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><text x="60" y="90" font-size="90" text-anchor="middle">⚽</text></svg>
-```
-
-`src/assets/img/item-toys.svg`:
-
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><text x="60" y="90" font-size="90" text-anchor="middle">🧸</text></svg>
-```
+Run: `bash build-assets/make-placeholders.sh`
+Expected: 19 SVGs (3 scenes + 5 characters + 11 items) under `public/assets/img/`.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/styles/memphis.css src/assets/img/*.svg
-git commit -m "feat: Memphis visual system and placeholder art"
+git add src/styles/memphis.css build-assets/make-placeholders.sh public/assets/img/*.svg
+git commit -m "feat: Memphis visual system and emoji placeholder art for all assets"
 ```
 
 ### Task 8: Renderer
@@ -895,7 +963,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { renderView } from "../src/render";
 import { loadContent } from "../src/content";
 import { selectRound } from "../src/selection";
-import sample from "../src/content.json";
+import sample from "./fixtures/sample-content.json";
 
 const content = loadContent(sample);
 
@@ -939,7 +1007,7 @@ Expected: FAIL — `renderView` not found.
 ```ts
 import type { ViewModel } from "./app-controller";
 
-const IMG = (file: string) => `/src/assets/img/${file}`;
+const IMG = (file: string) => `/assets/img/${file}`; // served from public/ in dev and dist
 
 function scatterShapes(): string {
   return `
@@ -1059,7 +1127,7 @@ Expected: FAIL — module not found.
 `src/audio-player.ts`:
 
 ```ts
-const AUDIO = (file: string) => `/src/assets/audio/${file}`;
+const AUDIO = (file: string) => `/assets/audio/${file}`; // served from public/ in dev and dist
 
 export class AudioPlayer {
   private current: HTMLAudioElement | null = null;
@@ -1108,6 +1176,8 @@ git commit -m "feat: audio player with graceful degradation"
 
 - [ ] **Step 1: Replace main.ts**
 
+One key press = exactly one transition: in standby a press calls `start()`; otherwise it calls `next()`. We track the current screen from the view callback so the handler knows which to call (calling both would double-advance).
+
 `src/main.ts`:
 
 ```ts
@@ -1121,42 +1191,23 @@ const root = document.querySelector<HTMLDivElement>("#app")!;
 const content = loadContent(rawContent);
 const audio = new AudioPlayer();
 
+let currentScreen: ViewModel["screen"] = "standby";
+
 const controller = new AppController(content, Math.random, (vm: ViewModel) => {
+  currentScreen = vm.screen;
   renderView(root, vm);
   if (vm.screen === "question") audio.play(vm.round!.questionAudio);
   else if (vm.screen === "reward") audio.play(vm.round!.thanksAudio);
   else audio.stop();
 });
 
-// Click delegation: the Start button.
+// Click delegation: the Start button (a real user gesture, so audio is allowed to play).
 root.addEventListener("click", (e) => {
   const target = (e.target as HTMLElement).closest("[data-action='start']");
   if (target) controller.start();
 });
 
-// Operator keyboard controls.
-window.addEventListener("keydown", (e) => {
-  if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") {
-    e.preventDefault();
-    // Space/Enter/Right both starts (from standby) and advances.
-    // start() is a no-op outside standby; next() is a no-op in standby.
-    controller.start();
-    controller.next();
-  } else if (e.key === "Escape") {
-    controller.toStandby();
-  }
-});
-
-controller.init();
-```
-
-> Note: pressing the key in standby calls `start()` (enters question) then `next()` — but `next()` only acts on question/reward, and we just entered question, so it would skip ahead. To avoid that, guard: only one of start/next should fire per key. Fix in Step 2.
-
-- [ ] **Step 2: Fix the key handler so one press = one transition**
-
-Replace the keyboard handler in `src/main.ts` with:
-
-```ts
+// Operator keyboard controls: one press = one transition.
 window.addEventListener("keydown", (e) => {
   if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") {
     e.preventDefault();
@@ -1166,34 +1217,21 @@ window.addEventListener("keydown", (e) => {
     controller.toStandby();
   }
 });
+
+controller.init();
 ```
 
-And track `currentScreen` by updating the onView callback:
-
-```ts
-let currentScreen: ViewModel["screen"] = "standby";
-const controller = new AppController(content, Math.random, (vm: ViewModel) => {
-  currentScreen = vm.screen;
-  renderView(root, vm);
-  if (vm.screen === "question") audio.play(vm.round!.questionAudio);
-  else if (vm.screen === "reward") audio.play(vm.round!.thanksAudio);
-  else audio.stop();
-});
-```
-
-(Declare `let currentScreen` before `const controller`.)
-
-- [ ] **Step 3: Run the full test suite**
+- [ ] **Step 2: Run the full test suite**
 
 Run: `npm test`
 Expected: PASS — all suites green (content, answer, selection, app-controller, render, audio-player).
 
-- [ ] **Step 4: Manually verify in the browser**
+- [ ] **Step 3: Manually verify in the browser**
 
 Run: `npm run dev`, open `http://localhost:1420`.
 Verify: Start button → scene with character + glasses sprite + "Where are my glasses?" bubble → press Space → lucky number + confetti → press Space → back to standby. (No audio yet — expected before Phase 8.)
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add src/main.ts
@@ -1231,39 +1269,65 @@ npx tauri init --ci \
 
 Expected: creates `src-tauri/` with `tauri.conf.json`, `Cargo.toml`, `src/main.rs`.
 
-- [ ] **Step 3: Set bundle targets and fullscreen-friendly window**
+- [ ] **Step 3: Overwrite `src-tauri/tauri.conf.json` with the full known-good config**
 
-In `src-tauri/tauri.conf.json`, ensure these keys (merge into the generated file):
+Don't hand-merge — replace the generated file's contents with this complete v2 config (adjust the `$schema`/`version` only if `tauri init` wrote a different schema URL). The default identifier `com.tauri.dev` MUST be changed or `tauri build` refuses to bundle. `withGlobalTauri`/`security.csp` left at defaults; `dangerousUseHttpScheme` is not needed.
+
+`src-tauri/tauri.conf.json`:
 
 ```json
 {
+  "$schema": "https://schema.tauri.app/config/2",
   "productName": "English Fun Time",
+  "version": "0.1.0",
   "identifier": "com.kindergarten.englishfuntime",
-  "bundle": {
-    "active": true,
-    "targets": ["dmg", "nsis"]
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
       { "title": "English Fun Time", "width": 1280, "height": 800, "resizable": true, "fullscreen": false }
-    ]
+    ],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg", "nsis"],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/icon.icns", "icons/icon.ico"]
   }
 }
 ```
 
-(`dmg` = macOS, `nsis` = Windows `.exe` installer. Each target only builds on its own OS — see Phase 9 for cross-building.)
+(`dmg` = macOS, `nsis` = Windows `.exe` installer. Each target only builds on its own OS — see Phase 9 for cross-building. The `icons/` are the defaults `tauri init` generates; keep them until real branding.)
 
-- [ ] **Step 4: Run the app in desktop dev mode**
+- [ ] **Step 4: Allow audio autoplay in the webview**
+
+The question/thank-you audio plays right after a Start click/keypress (a user gesture), which normally satisfies autoplay policy. To be safe across WebView2 (Windows) and WKWebView (macOS), and because playback is awaited across a microtask, explicitly allow autoplay. In `src-tauri/tauri.conf.json` the simplest portable approach is to rely on the user-gesture (already present) — but verify in the PACKAGED app, not just `npm run dev` (Chrome's dev autoplay rules differ). If the packaged app is silent, add to `src-tauri/src/lib.rs` (or `main.rs`) on the WebviewWindow builder for Windows:
+
+```rust
+// Windows (WebView2): allow autoplay without a gesture.
+#[cfg(target_os = "windows")]
+{
+  // see tauri additional_browser_args / WebView2 "--autoplay-policy=no-user-gesture-required"
+}
+```
+
+Record the outcome; do not block on it now since the gesture path should work. (Task 16 Step 4 is where audio is verified end to end.)
+
+- [ ] **Step 5: Run the app in desktop dev mode**
 
 Run: `npm run tauri dev`
 Expected: a native window opens showing the standby screen; the full flow works with mouse + keyboard.
 
-- [ ] **Step 5: Build a local installer for the current OS**
+- [ ] **Step 6: Build a local installer for the current OS**
 
 Run (on macOS): `npm run tauri build`
-Expected: produces a `.dmg` under `src-tauri/target/release/bundle/dmg/`.
+Expected: produces a `.dmg` under `src-tauri/target/release/bundle/dmg/`. Open it and confirm images AND audio work in the packaged app (this is the real test of the `public/` asset paths from B3 and autoplay from Step 4).
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src-tauri package.json package-lock.json
@@ -1610,7 +1674,7 @@ export class MimoClient {
 }
 ```
 
-`build-assets/.env.example`:
+`build-assets/.env.example` (set the model ids to whatever **Task -1 (probe)** confirmed — the values below are the starting guess; the spec mentioned `mimo-v2.5-tts-voicedesign`, so this may need to change):
 
 ```
 MIMO_BASE_URL=https://token-plan-cn.xiaomimimo.com/v1
@@ -1624,7 +1688,7 @@ MIMO_TTS_MODEL=mimo-v2.5-tts
 Run: `npx vitest run tests/mimo-client.test.ts`
 Expected: PASS (3 tests).
 
-> **Note:** the exact TTS request/response shape and `voice` field must be confirmed against Mimo's actual API when first run live (Step in Task 16). The client isolates this so only this file changes if the shape differs.
+> **Note:** This client/test encodes the *assumed* OpenAI-compatible shape. **Task -1 (probe) is authoritative** — if the real TTS uses a `voicedesign` description instead of a catalog `voice`, or a different endpoint/body, update `tts()` (and this test) to match. The client isolates the API so only this file changes.
 
 - [ ] **Step 5: Commit**
 
@@ -1691,7 +1755,8 @@ import { questionPrompt, thanksPrompt } from "./prompts";
 import type { Content, CharacterDef } from "../src/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SRC = resolve(__dirname, "../src");
+const SRC = resolve(__dirname, "../src");                       // content.json lives here (imported)
+const AUDIO_DIR = resolve(__dirname, "../public/assets/audio"); // mp3s live here (served via public/)
 
 /** Pure: assemble the runtime manifest from config + planned audio filenames. */
 export function buildManifest(cfg: ContentConfig, audioByLine: Map<string, string>): Content {
@@ -1727,14 +1792,16 @@ async function main(): Promise<void> {
   const textModel = MIMO_TEXT_MODEL ?? "mimo-v2.5";
   const ttsModel = MIMO_TTS_MODEL ?? "mimo-v2.5-tts";
 
-  // One distinct voice per character. Confirm valid voice ids against the API on first run.
+  // One distinct "voice" per character. NOTE: whether these are catalog voice ids OR
+  // voicedesign description strings is decided in Task -1 (Live Mimo API probe).
+  // Replace these values with whatever the probe confirmed.
   const voiceByCharacter: Record<string, string> = {
     grandma: "female_warm", boy: "child_boy", girl: "child_girl", dad: "male_calm", mom: "female_gentle",
   };
 
   const lines = enumerateAudioLines(CONTENT_CONFIG);
   const audioByLine = new Map<string, string>();
-  const audioDir = resolve(SRC, "assets/audio");
+  const audioDir = AUDIO_DIR;
   await mkdir(audioDir, { recursive: true });
 
   for (const line of lines) {
@@ -1775,42 +1842,45 @@ git add build-assets/generate.ts tests/generate.test.ts
 git commit -m "feat: asset generator orchestration (pure manifest + live main)"
 ```
 
-### Task 16: First live generation run
+### Task 16: First live generation run (dev machine only)
+
+This runs ONCE on the developer's machine that holds the key. The outputs (`src/content.json` + mp3s) are **committed**, so CI and clean clones never need the key.
 
 **Files:**
 - Create: `build-assets/.env` (NOT committed — gitignored)
-- Modify (regenerated): `src/content.json`, `src/assets/audio/*.mp3`
+- Modify/create (committed): `src/content.json`, `public/assets/audio/*.mp3`
 
 - [ ] **Step 1: Create the .env from the example with the real key**
 
 ```bash
 cp build-assets/.env.example build-assets/.env
-# Edit build-assets/.env and set MIMO_API_KEY to the real key.
+# Edit build-assets/.env: set MIMO_API_KEY to the real key, and set the
+# model ids / TTS settings to whatever Task -1 (the API probe) confirmed.
 ```
 
-(`build-assets/.env` is gitignored via the `.env` rule — verify with `git check-ignore build-assets/.env`.)
+Verify it is ignored: `git check-ignore build-assets/.env` → should print the path (matched by the `.env` rule).
 
 - [ ] **Step 2: Run the generator for real**
 
 Run: `npm run generate`
-Expected: prints `✓ <file>: <spoken line>` for each of the ~55 lines (5 chars: items + 10 thanks each) and `✓ wrote src/content.json`. mp3 files appear under `src/assets/audio/`.
+Expected: prints `✓ <file>: <spoken line>` for each of the **61** lines (question lines = 1+2+2+3+3 = 11; thanks lines = 5×10 = 50) and `✓ wrote src/content.json`. mp3 files appear under `public/assets/audio/`.
 
 - [ ] **Step 3: If the API shape differs, fix the client and rerun**
 
-If chat or tts errors with a schema/voice problem, adjust `build-assets/mimo-client.ts` (request body / `voice` ids) per the actual Mimo docs, keep `tests/mimo-client.test.ts` green, and rerun `npm run generate`.
+If chat or tts errors with a schema/voice problem, adjust `build-assets/mimo-client.ts` (request body / voice handling) to match what Task -1 found, keep `tests/mimo-client.test.ts` green, and rerun `npm run generate`. (`content-config.ts` is the ONLY source of truth — never hand-edit `src/content.json`; it is overwritten on every run.)
 
 - [ ] **Step 4: Verify audio plays end-to-end**
 
 Run: `npm run dev`, open the app, press Start. Confirm the character's question is spoken and the thank-you + number is spoken on the reward screen.
 
-- [ ] **Step 5: Commit the generated manifest (audio stays gitignored)**
+- [ ] **Step 5: Commit the generated manifest AND audio**
 
 ```bash
-git add src/content.json
-git commit -m "chore: regenerate content manifest from Mimo (audio gitignored)"
+git add src/content.json public/assets/audio/*.mp3
+git commit -m "chore: generate content manifest + TTS audio from Mimo"
 ```
 
-> Audio mp3s are large/regenerable, so they are gitignored and bundled at build time. If you prefer to commit them for reproducibility, remove `src/assets/audio/` from `.gitignore` and `git add` them here.
+> Audio is committed (≈61 short clips, a few MB) so a clean clone builds an identical app fully offline and CI never needs the API key. If the audio set ever grows too large for git, switch to Git LFS rather than gitignoring it (gitignoring would make clean-clone builds ship without sound).
 
 ---
 
@@ -1848,11 +1918,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Install deps
         run: npm ci
-      - name: Generate assets (text + TTS)
-        env:
-          MIMO_BASE_URL: ${{ secrets.MIMO_BASE_URL }}
-          MIMO_API_KEY: ${{ secrets.MIMO_API_KEY }}
-        run: npm run generate
+      # No asset generation in CI: content.json + audio are committed (Task 16),
+      # so the API key NEVER enters CI and both OS builds are byte-identical content.
       - name: Build app
         uses: tauri-apps/tauri-action@v0
       - name: Upload installers
@@ -1864,11 +1931,11 @@ jobs:
             src-tauri/target/release/bundle/nsis/*.exe
 ```
 
-> The API key lives only in GitHub repo **secrets** (`MIMO_API_KEY`, `MIMO_BASE_URL`), is used only to generate assets in CI, and never ends up in the built app. Set them under Settings → Secrets and variables → Actions.
+> Because generated assets are committed, CI needs **no secrets at all** — the API key lives only on the developer's machine in `build-assets/.env`. This also guarantees the `.dmg` and `.exe` speak the *same* lines (generating per-OS in CI would produce divergent content at temperature 0.8).
 
 - [ ] **Step 2: Document local-only alternative (no CI)**
 
-If not using GitHub: build `.dmg` on a Mac (`npm run generate && npm run tauri build`) and `.exe` on a Windows machine (same commands). Both need their own OS; there is no reliable single-machine cross-build for Tauri.
+If not using GitHub: assets are already generated/committed (Task 16), so just build `.dmg` on a Mac (`npm run tauri build`) and `.exe` on a Windows machine (`npm run tauri build`). Both need their own OS; there is no reliable single-machine cross-build for Tauri.
 
 - [ ] **Step 3: Commit**
 
@@ -1884,20 +1951,20 @@ git commit -m "ci: cross-platform Tauri build (dmg + exe) via tauri-action"
 ### Task 18: Replace placeholder art with AI-generated illustrations
 
 **Files:**
-- Replace: all `src/assets/img/*.svg` (or add `.png`) — backgrounds (3), characters (5), item sprites (11)
+- Replace: all `public/assets/img/*.svg` (or add `.png`) — backgrounds (3), characters (5), item sprites (11)
 
 - [ ] **Step 1: Produce the illustrations**
 
-Using an available image-generation tool (the open item from the spec — Mimo's listed models do not include image gen), produce flat, cute, Memphis-pastel art:
+Using an available image-generation tool (the open item from the spec — Mimo's listed models do not include image gen), produce flat, cute, Memphis-pastel art into `public/assets/img/`:
 - 3 backgrounds: `scene-living-room`, `scene-boy-room`, `scene-girl-outdoor` (16:9, furniture/places visible at the anchor positions in `content-config.ts`).
 - 5 character portraits (transparent): grandma, boy, girl, dad, mom.
 - 11 item sprites (transparent): glasses, football, toys, puppy, kitten, keys, wallet, newspaper, handbag, necklace, ring.
 
-Keep the **same filenames** referenced in `content-config.ts` / `content.json` so no code changes are needed. If using `.png`, update the `sprite`/`background`/`portrait` filenames in `build-assets/content-config.ts` and rerun `npm run generate` to refresh `content.json` (or hand-edit `content.json` filenames).
+Keep the **same filenames** the placeholders used so no code changes are needed. If switching to `.png`, change the `sprite`/`background`/`portrait` filenames in `build-assets/content-config.ts` (the single source of truth) and **rerun `npm run generate`** to refresh `content.json`. Never hand-edit `content.json` — it is regenerated.
 
 - [ ] **Step 2: Tune anchor coordinates to the real backgrounds**
 
-Run `npm run dev`, step through each character/item, and adjust each location's `anchor.xPct/yPct` in `build-assets/content-config.ts` so the item sprite visually sits at the right spot. Rerun `npm run generate` (or edit `content.json`) to apply.
+Run `npm run dev`, step through each character/item, and adjust each location's `anchor.xPct/yPct` in `build-assets/content-config.ts` so the item sprite visually sits at the right spot. Rerun `npm run generate` to apply (this rewrites `content.json` from config).
 
 - [ ] **Step 3: Verify all scenes look correct**
 
@@ -1906,7 +1973,7 @@ Manually cycle Start → question for each of the 5 characters (rerun until each
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/assets/img build-assets/content-config.ts src/content.json
+git add public/assets/img build-assets/content-config.ts src/content.json
 git commit -m "feat: final AI-generated illustrations + tuned anchors"
 ```
 
@@ -1961,16 +2028,32 @@ git commit -m "docs: operator runbook"
 - Scene reuse + anchor/sprite overlay → Task 12 scenes (living-room shared by grandma/dad/mom) + Task 8 renderer placing sprite at anchor. ✅
 - Random selection, one character/one question per child → Task 5 + Task 6. ✅
 - Lucky number 1–10, decorative, confetti → Task 5 `pickLuckyNumber`, Task 8 reward screen. ✅
-- Offline, no API key, pre-generated → Phase 8 build pipeline + Phase 7/9 packaging; key only in `.env`/CI secrets. ✅
+- Offline, no API key, pre-generated → Phase 8 build pipeline + Phase 7/9 packaging; key lives ONLY in dev-machine `build-assets/.env`, never in CI, never in the bundle. ✅
 - Tauri, both `.exe` + `.dmg` → Task 11 (targets dmg+nsis) + Task 17 (matrix). ✅
 - English only + English subtitles → Task 8 bubble shows `questionText`; lines generated in English (Task 13 prompts). ✅
 - No recording/mic/name entry → never introduced; standby is Start-only (Task 8). ✅
-- Mimo text + voicedesign distinct voices → Task 15 `voiceByCharacter`. ✅
-- Open items (image-gen tool, voice ids, preposition correctness) → Task 18 + Task 16 Step 3 + config review. ✅
+- Mimo text + distinct voices per character → Task 15 `voiceByCharacter`, mechanism confirmed in Task -1. ✅
+- Open items (image-gen tool, voice ids/mechanism, preposition correctness) → Task -1 + Task 18 + config review. ✅
 
-**Placeholder scan:** No "TBD/implement later" steps; every code step has real code. The one genuinely external unknown (Mimo TTS request shape / voice ids) is isolated in `mimo-client.ts` with an explicit live-verification step (Task 16 Step 3) — not a hidden placeholder.
+**Placeholder scan:** No "TBD/implement later" steps; every code step has real code. The genuinely external unknown (Mimo chat/TTS shape, voice mechanism, model ids) is now front-loaded into **Task -1 (live probe)** and isolated in `mimo-client.ts` — not a hidden placeholder.
 
 **Type consistency:** `Content`/`CharacterDef`/`Round` defined in Task 1 are used consistently by `loadContent` (T2), `selectRound` (T5), `AppController`/`ViewModel` (T6), `renderView` (T8), and `buildManifest` (T15). `questionAudio` keyed by itemId and `thanksAudio` keyed by "1".."10" match between `content-config.enumerateAudioLines`, `buildManifest`, and `selectRound`. Field names (`anchor.xPct/yPct`, `preposition`, `labelEn`, `isPlural`) are uniform across schema, config, and renderer.
+
+---
+
+## Audit Revisions (post external review)
+
+This plan was audited before execution; the following fixes were folded in:
+
+- **🔴 Vitest types** — `vite.config.ts` now imports `defineConfig` from `vitest/config` so `tsc --noEmit` accepts the `test` key (Task 0).
+- **🔴 Production asset paths** — runtime media moved to `public/assets/{img,audio}` (served at `/assets/...` in both dev and the packaged build); fixes the would-be 404s in the shipped app (Tasks 3, 7, 8, 9, 11, 15).
+- **🔴 Gitignore/audio reconciliation** — generated `content.json` + audio are **committed**; `.gitignore` ownership added to Task 0; the API key never enters CI (Tasks 0, 16, 17).
+- **🟡 Early API probe** — new **Task -1** validates Mimo chat/TTS/voice/model reality before any dependent code (Tasks -1, 14, 15, 16).
+- **🟡 main.ts** — single correct one-press-one-transition handler, no committed-then-reverted bug (Task 10).
+- **🟡 CI divergence** — CI is build-only; both installers ship identical committed content (Task 17).
+- **🟢 Test isolation** — selection/controller/render tests use a frozen `tests/fixtures/sample-content.json`, so Phase 8 regeneration can't break them (Tasks 3, 5, 6, 8).
+- **🟢 Full asset coverage** — placeholders for all 5 characters + 11 items + 3 scenes, so random selection never shows a broken image (Task 7).
+- **🟢 content.json single source** — hand-edit escape hatches removed; `content-config.ts` is authoritative (Tasks 16, 18).
 
 ---
 ```
