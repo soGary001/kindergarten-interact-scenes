@@ -1,0 +1,54 @@
+:root {
+  --pink: #FF6B9D; --pink-dk: #C2185B;
+  --cyan: #4DD0E1; --yellow: #FFD54F;
+  --purple: #BA68C8; --green: #81C784;
+  --bg: #FFF1F6; --ink: #3a3a3a;
+  --radius: 28px;
+}
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  font-family: "Comic Sans MS", "Baloo 2", system-ui, sans-serif;
+  color: var(--ink); background: var(--bg); overflow: hidden;
+}
+.screen {
+  position: relative; height: 100vh; width: 100vw;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden;
+}
+.shape { position: absolute; opacity: 0.9; }
+.shape.dot { border-radius: 50%; }
+.shape.tri {
+  width: 0; height: 0; border-left: 20px solid transparent;
+  border-right: 20px solid transparent; border-bottom: 34px solid var(--cyan);
+}
+.title { font-size: 4rem; font-weight: 900; color: var(--pink); text-shadow: 4px 4px 0 var(--yellow); }
+.subtitle { color: #888; font-size: 1.2rem; }
+.btn-primary {
+  font: inherit; font-size: 1.8rem; font-weight: 800; cursor: pointer;
+  padding: 18px 56px; color: #fff; background: var(--pink);
+  border: none; border-radius: 40px; box-shadow: 5px 5px 0 var(--pink-dk);
+}
+.btn-primary:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--pink-dk); }
+.scene-stage { position: relative; width: min(90vw, 1100px); aspect-ratio: 16/9; }
+.scene-bg { width: 100%; height: 100%; object-fit: contain; }
+.scene-item {
+  position: absolute; width: 9%; transform: translate(-50%, -50%);
+  animation: bob 1.4s ease-in-out infinite;
+}
+@keyframes bob { 0%,100% { transform: translate(-50%,-50%); } 50% { transform: translate(-50%,-62%); } }
+.character { position: absolute; left: 3%; bottom: 4%; width: 18%; }
+.bubble {
+  position: absolute; left: 22%; bottom: 14%; max-width: 46%;
+  background: #fff; border: 4px solid var(--pink); border-radius: 24px;
+  padding: 16px 22px; font-size: 1.6rem; font-weight: 700; box-shadow: 4px 4px 0 var(--pink);
+}
+.hint { position: absolute; bottom: 18px; right: 24px; color: #aaa; font-size: 0.95rem; }
+.lucky {
+  font-size: 7rem; font-weight: 900; color: #fff; background: var(--purple);
+  width: 200px; height: 200px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; box-shadow: 8px 8px 0 #7B1FA2; animation: pop 0.5s ease;
+}
+@keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.confetti { position: absolute; font-size: 2rem; animation: fall 2.4s linear infinite; }
+@keyframes fall { 0% { transform: translateY(-10vh) rotate(0); } 100% { transform: translateY(110vh) rotate(360deg); } }
