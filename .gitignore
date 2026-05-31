@@ -1,0 +1,16 @@
+# Brainstorming visual companion scratch files
+.superpowers/
+
+# Secrets — API keys must never be committed
+.env
+.env.*
+!.env.example
+
+# Build output
+/dist/
+/build/
+/src-tauri/target/
+node_modules/
+
+# OS
+.DS_Store
