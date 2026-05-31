@@ -4,22 +4,225 @@
       "id": "living-room",
       "background": "scene-living-room.svg",
       "locations": [
-        { "id": "table",      "labelEn": "table",      "preposition": "on",    "anchor": { "xPct": 20, "yPct": 70 } },
-        { "id": "sofa",       "labelEn": "sofa",       "preposition": "on",    "anchor": { "xPct": 50, "yPct": 72 } },
-        { "id": "windowsill", "labelEn": "windowsill", "preposition": "on",    "anchor": { "xPct": 80, "yPct": 35 } },
-        { "id": "bookshelf",  "labelEn": "bookshelf",  "preposition": "on",    "anchor": { "xPct": 12, "yPct": 30 } },
-        { "id": "wardrobe",   "labelEn": "wardrobe",   "preposition": "in",    "anchor": { "xPct": 88, "yPct": 65 } },
-        { "id": "pillow",     "labelEn": "pillow",     "preposition": "under", "anchor": { "xPct": 35, "yPct": 50 } }
+        {
+          "id": "table",
+          "labelEn": "table",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 20,
+            "yPct": 70
+          }
+        },
+        {
+          "id": "tv-cabinet",
+          "labelEn": "TV cabinet",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 64,
+            "yPct": 60
+          }
+        },
+        {
+          "id": "chair",
+          "labelEn": "chair",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 30,
+            "yPct": 66
+          }
+        },
+        {
+          "id": "sofa",
+          "labelEn": "sofa",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 50,
+            "yPct": 72
+          }
+        },
+        {
+          "id": "windowsill",
+          "labelEn": "windowsill",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 80,
+            "yPct": 35
+          }
+        },
+        {
+          "id": "desk-lamp",
+          "labelEn": "lamp",
+          "preposition": "by",
+          "anchor": {
+            "xPct": 72,
+            "yPct": 50
+          }
+        },
+        {
+          "id": "carpet",
+          "labelEn": "carpet",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 50,
+            "yPct": 88
+          }
+        },
+        {
+          "id": "wardrobe",
+          "labelEn": "wardrobe",
+          "preposition": "in",
+          "anchor": {
+            "xPct": 88,
+            "yPct": 65
+          }
+        },
+        {
+          "id": "bookshelf",
+          "labelEn": "bookshelf",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 12,
+            "yPct": 30
+          }
+        },
+        {
+          "id": "pillow",
+          "labelEn": "pillow",
+          "preposition": "under",
+          "anchor": {
+            "xPct": 35,
+            "yPct": 50
+          }
+        }
       ]
     },
     {
       "id": "boy-room",
       "background": "scene-boy-room.svg",
       "locations": [
-        { "id": "door",       "labelEn": "door",       "preposition": "by", "anchor": { "xPct": 15, "yPct": 55 } },
-        { "id": "grass",      "labelEn": "grass",      "preposition": "on", "anchor": { "xPct": 78, "yPct": 80 } },
-        { "id": "shelf",      "labelEn": "shelf",      "preposition": "on", "anchor": { "xPct": 40, "yPct": 30 } },
-        { "id": "carpet",     "labelEn": "carpet",     "preposition": "on", "anchor": { "xPct": 55, "yPct": 82 } }
+        {
+          "id": "door",
+          "labelEn": "door",
+          "preposition": "by",
+          "anchor": {
+            "xPct": 15,
+            "yPct": 55
+          }
+        },
+        {
+          "id": "grass",
+          "labelEn": "grass",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 78,
+            "yPct": 80
+          }
+        },
+        {
+          "id": "shelf",
+          "labelEn": "shelf",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 40,
+            "yPct": 30
+          }
+        },
+        {
+          "id": "chair",
+          "labelEn": "chair",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 30,
+            "yPct": 66
+          }
+        },
+        {
+          "id": "sofa",
+          "labelEn": "sofa",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 55,
+            "yPct": 70
+          }
+        },
+        {
+          "id": "windowsill",
+          "labelEn": "windowsill",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 85,
+            "yPct": 32
+          }
+        },
+        {
+          "id": "carpet",
+          "labelEn": "carpet",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 50,
+            "yPct": 86
+          }
+        }
+      ]
+    },
+    {
+      "id": "girl-outdoor",
+      "background": "scene-girl-outdoor.svg",
+      "locations": [
+        {
+          "id": "station",
+          "labelEn": "station",
+          "preposition": "at",
+          "anchor": {
+            "xPct": 18,
+            "yPct": 50
+          }
+        },
+        {
+          "id": "park",
+          "labelEn": "park",
+          "preposition": "in",
+          "anchor": {
+            "xPct": 40,
+            "yPct": 70
+          }
+        },
+        {
+          "id": "garden",
+          "labelEn": "garden",
+          "preposition": "in",
+          "anchor": {
+            "xPct": 62,
+            "yPct": 72
+          }
+        },
+        {
+          "id": "balcony",
+          "labelEn": "balcony",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 82,
+            "yPct": 40
+          }
+        },
+        {
+          "id": "shelf",
+          "labelEn": "shelf",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 30,
+            "yPct": 34
+          }
+        },
+        {
+          "id": "carpet",
+          "labelEn": "carpet",
+          "preposition": "on",
+          "anchor": {
+            "xPct": 55,
+            "yPct": 88
+          }
+        }
       ]
     }
   ],
@@ -30,10 +233,28 @@
       "portrait": "char-grandma.svg",
       "sceneId": "living-room",
       "items": [
-        { "id": "glasses", "word": "glasses", "isPlural": true, "sprite": "item-glasses.svg" }
+        {
+          "id": "glasses",
+          "word": "glasses",
+          "isPlural": true,
+          "sprite": "item-glasses.svg"
+        }
       ],
-      "questionAudio": { "glasses": "" },
-      "thanksAudio": { "1": "", "2": "", "3": "", "4": "", "5": "", "6": "", "7": "", "8": "", "9": "", "10": "" }
+      "questionAudio": {
+        "glasses": "grandma-q-glasses.wav"
+      },
+      "thanksAudio": {
+        "1": "grandma-t-1.wav",
+        "2": "grandma-t-2.wav",
+        "3": "grandma-t-3.wav",
+        "4": "grandma-t-4.wav",
+        "5": "grandma-t-5.wav",
+        "6": "grandma-t-6.wav",
+        "7": "grandma-t-7.wav",
+        "8": "grandma-t-8.wav",
+        "9": "grandma-t-9.wav",
+        "10": "grandma-t-10.wav"
+      }
     },
     {
       "id": "boy",
@@ -41,11 +262,157 @@
       "portrait": "char-boy.svg",
       "sceneId": "boy-room",
       "items": [
-        { "id": "football", "word": "football", "isPlural": false, "sprite": "item-football.svg" },
-        { "id": "toys",     "word": "toys",     "isPlural": true,  "sprite": "item-toys.svg" }
+        {
+          "id": "football",
+          "word": "football",
+          "isPlural": false,
+          "sprite": "item-football.svg"
+        },
+        {
+          "id": "toys",
+          "word": "toys",
+          "isPlural": true,
+          "sprite": "item-toys.svg"
+        }
       ],
-      "questionAudio": { "football": "", "toys": "" },
-      "thanksAudio": { "1": "", "2": "", "3": "", "4": "", "5": "", "6": "", "7": "", "8": "", "9": "", "10": "" }
+      "questionAudio": {
+        "football": "boy-q-football.wav",
+        "toys": "boy-q-toys.wav"
+      },
+      "thanksAudio": {
+        "1": "boy-t-1.wav",
+        "2": "boy-t-2.wav",
+        "3": "boy-t-3.wav",
+        "4": "boy-t-4.wav",
+        "5": "boy-t-5.wav",
+        "6": "boy-t-6.wav",
+        "7": "boy-t-7.wav",
+        "8": "boy-t-8.wav",
+        "9": "boy-t-9.wav",
+        "10": "boy-t-10.wav"
+      }
+    },
+    {
+      "id": "girl",
+      "nameEn": "Little Girl",
+      "portrait": "char-girl.svg",
+      "sceneId": "girl-outdoor",
+      "items": [
+        {
+          "id": "puppy",
+          "word": "puppy",
+          "isPlural": false,
+          "sprite": "item-puppy.svg"
+        },
+        {
+          "id": "kitten",
+          "word": "kitten",
+          "isPlural": false,
+          "sprite": "item-kitten.svg"
+        }
+      ],
+      "questionAudio": {
+        "puppy": "girl-q-puppy.wav",
+        "kitten": "girl-q-kitten.wav"
+      },
+      "thanksAudio": {
+        "1": "girl-t-1.wav",
+        "2": "girl-t-2.wav",
+        "3": "girl-t-3.wav",
+        "4": "girl-t-4.wav",
+        "5": "girl-t-5.wav",
+        "6": "girl-t-6.wav",
+        "7": "girl-t-7.wav",
+        "8": "girl-t-8.wav",
+        "9": "girl-t-9.wav",
+        "10": "girl-t-10.wav"
+      }
+    },
+    {
+      "id": "dad",
+      "nameEn": "Dad",
+      "portrait": "char-dad.svg",
+      "sceneId": "living-room",
+      "items": [
+        {
+          "id": "keys",
+          "word": "keys",
+          "isPlural": true,
+          "sprite": "item-keys.svg"
+        },
+        {
+          "id": "wallet",
+          "word": "wallet",
+          "isPlural": false,
+          "sprite": "item-wallet.svg"
+        },
+        {
+          "id": "newspaper",
+          "word": "newspaper",
+          "isPlural": false,
+          "sprite": "item-newspaper.svg"
+        }
+      ],
+      "questionAudio": {
+        "keys": "dad-q-keys.wav",
+        "wallet": "dad-q-wallet.wav",
+        "newspaper": "dad-q-newspaper.wav"
+      },
+      "thanksAudio": {
+        "1": "dad-t-1.wav",
+        "2": "dad-t-2.wav",
+        "3": "dad-t-3.wav",
+        "4": "dad-t-4.wav",
+        "5": "dad-t-5.wav",
+        "6": "dad-t-6.wav",
+        "7": "dad-t-7.wav",
+        "8": "dad-t-8.wav",
+        "9": "dad-t-9.wav",
+        "10": "dad-t-10.wav"
+      }
+    },
+    {
+      "id": "mom",
+      "nameEn": "Mom",
+      "portrait": "char-mom.svg",
+      "sceneId": "living-room",
+      "items": [
+        {
+          "id": "handbag",
+          "word": "handbag",
+          "isPlural": false,
+          "sprite": "item-handbag.svg"
+        },
+        {
+          "id": "necklace",
+          "word": "necklace",
+          "isPlural": false,
+          "sprite": "item-necklace.svg"
+        },
+        {
+          "id": "ring",
+          "word": "ring",
+          "isPlural": false,
+          "sprite": "item-ring.svg"
+        }
+      ],
+      "questionAudio": {
+        "handbag": "mom-q-handbag.wav",
+        "necklace": "mom-q-necklace.wav",
+        "ring": "mom-q-ring.wav"
+      },
+      "thanksAudio": {
+        "1": "mom-t-1.wav",
+        "2": "mom-t-2.wav",
+        "3": "mom-t-3.wav",
+        "4": "mom-t-4.wav",
+        "5": "mom-t-5.wav",
+        "6": "mom-t-6.wav",
+        "7": "mom-t-7.wav",
+        "8": "mom-t-8.wav",
+        "9": "mom-t-9.wav",
+        "10": "mom-t-10.wav"
+      }
     }
   ]
 }
