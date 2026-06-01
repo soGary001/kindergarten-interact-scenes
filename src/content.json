@@ -272,7 +272,8 @@
           "id": "toys",
           "word": "toys",
           "isPlural": true,
-          "sprite": "item-toys.png"
+          "sprite": "item-toys.png",
+          "scale": 1.5
         }
       ],
       "questionAudio": {
@@ -387,13 +388,15 @@
           "id": "necklace",
           "word": "necklace",
           "isPlural": false,
-          "sprite": "item-necklace.png"
+          "sprite": "item-necklace.png",
+          "scale": 0.6
         },
         {
           "id": "ring",
           "word": "ring",
           "isPlural": false,
-          "sprite": "item-ring.png"
+          "sprite": "item-ring.png",
+          "scale": 0.6
         }
       ],
       "questionAudio": {

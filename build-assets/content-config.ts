@@ -1,4 +1,4 @@
-export interface ConfigItem { id: string; word: string; isPlural: boolean; sprite: string; }
+export interface ConfigItem { id: string; word: string; isPlural: boolean; sprite: string; scale?: number; }
 export interface ConfigLocation { id: string; labelEn: string; preposition: string; anchor: { xPct: number; yPct: number }; }
 export interface ConfigScene { id: string; background: string; locations: ConfigLocation[]; }
 export interface ConfigCharacter { id: string; nameEn: string; persona: string; portrait: string; sceneId: string; items: ConfigItem[]; }
@@ -56,7 +56,7 @@ export const CONTENT_CONFIG: ContentConfig = {
     { id: "boy", nameEn: "Little Boy", persona: "an energetic, cheerful little boy", portrait: "char-boy.png", sceneId: "boy-room",
       items: [
         { id: "football", word: "football", isPlural: false, sprite: "item-football.png" },
-        { id: "toys", word: "toys", isPlural: true, sprite: "item-toys.png" },
+        { id: "toys", word: "toys", isPlural: true, sprite: "item-toys.png", scale: 1.5 },
       ] },
     { id: "girl", nameEn: "Little Girl", persona: "a sweet, curious little girl", portrait: "char-girl.png", sceneId: "girl-outdoor",
       items: [
@@ -72,8 +72,8 @@ export const CONTENT_CONFIG: ContentConfig = {
     { id: "mom", nameEn: "Mom", persona: "a kind, gentle mother", portrait: "char-mom.png", sceneId: "living-room",
       items: [
         { id: "handbag", word: "handbag", isPlural: false, sprite: "item-handbag.png" },
-        { id: "necklace", word: "necklace", isPlural: false, sprite: "item-necklace.png" },
-        { id: "ring", word: "ring", isPlural: false, sprite: "item-ring.png" },
+        { id: "necklace", word: "necklace", isPlural: false, sprite: "item-necklace.png", scale: 0.6 },
+        { id: "ring", word: "ring", isPlural: false, sprite: "item-ring.png", scale: 0.6 },
       ] },
   ],
 };

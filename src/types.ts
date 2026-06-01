@@ -3,6 +3,7 @@ export interface ItemDef {
   word: string;        // "glasses" (English noun shown/spoken)
   isPlural: boolean;   // glasses -> true (affects "is/are")
   sprite: string;      // filename under assets/img/, e.g. "item-glasses.svg"
+  scale?: number;      // size multiplier on the base sprite width (default 1)
 }
 
 export interface LocationDef {
