@@ -45,8 +45,10 @@ body {
 .mascot .character { width: 82%; }
 .scene-bg { width: 100%; height: 100%; object-fit: contain; }
 .scene-item {
-  position: absolute; width: 17%; transform: translate(-50%, -50%);
-  display: flex; align-items: center; justify-content: center;
+  /* anchor = the item's BOTTOM-center (its "feet"), so it rests on the surface
+     at (xPct,yPct) regardless of its size. */
+  position: absolute; width: 17%; transform: translate(-50%, -100%);
+  display: flex; align-items: flex-end; justify-content: center;
 }
 .scene-item::before {
   content: ""; position: absolute; inset: -24%; border-radius: 50%; z-index: -1;

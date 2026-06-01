@@ -10,7 +10,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 38,
-            "yPct": 66
+            "yPct": 73
           }
         },
         {
@@ -19,7 +19,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 11,
-            "yPct": 56
+            "yPct": 64
           }
         },
         {
@@ -28,7 +28,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 27,
-            "yPct": 53
+            "yPct": 62
           }
         },
         {
@@ -36,8 +36,8 @@
           "labelEn": "sofa",
           "preposition": "on",
           "anchor": {
-            "xPct": 65,
-            "yPct": 55
+            "xPct": 66,
+            "yPct": 62
           }
         },
         {
@@ -46,7 +46,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 42,
-            "yPct": 26
+            "yPct": 43
           }
         },
         {
@@ -54,8 +54,8 @@
           "labelEn": "lamp",
           "preposition": "by",
           "anchor": {
-            "xPct": 61,
-            "yPct": 44
+            "xPct": 58,
+            "yPct": 58
           }
         },
         {
@@ -64,7 +64,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 41,
-            "yPct": 80
+            "yPct": 85
           }
         },
         {
@@ -73,7 +73,7 @@
           "preposition": "in",
           "anchor": {
             "xPct": 82,
-            "yPct": 47
+            "yPct": 60
           }
         },
         {
@@ -82,7 +82,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 90,
-            "yPct": 55
+            "yPct": 62
           }
         },
         {
@@ -90,8 +90,8 @@
           "labelEn": "pillow",
           "preposition": "under",
           "anchor": {
-            "xPct": 55,
-            "yPct": 55
+            "xPct": 54,
+            "yPct": 62
           }
         }
       ]
@@ -106,7 +106,7 @@
           "preposition": "by",
           "anchor": {
             "xPct": 29,
-            "yPct": 63
+            "yPct": 70
           }
         },
         {
@@ -115,7 +115,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 50,
-            "yPct": 60
+            "yPct": 70
           }
         },
         {
@@ -124,7 +124,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 14,
-            "yPct": 22
+            "yPct": 30
           }
         },
         {
@@ -133,7 +133,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 16,
-            "yPct": 54
+            "yPct": 66
           }
         },
         {
@@ -142,7 +142,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 82,
-            "yPct": 60
+            "yPct": 66
           }
         },
         {
@@ -151,7 +151,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 81,
-            "yPct": 37
+            "yPct": 47
           }
         },
         {
@@ -160,7 +160,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 46,
-            "yPct": 85
+            "yPct": 90
           }
         }
       ]
@@ -175,7 +175,7 @@
           "preposition": "at",
           "anchor": {
             "xPct": 11,
-            "yPct": 56
+            "yPct": 66
           }
         },
         {
@@ -184,7 +184,7 @@
           "preposition": "in",
           "anchor": {
             "xPct": 32,
-            "yPct": 64
+            "yPct": 74
           }
         },
         {
@@ -193,7 +193,7 @@
           "preposition": "in",
           "anchor": {
             "xPct": 58,
-            "yPct": 60
+            "yPct": 70
           }
         },
         {
@@ -202,7 +202,7 @@
           "preposition": "on",
           "anchor": {
             "xPct": 88,
-            "yPct": 28
+            "yPct": 36
           }
         },
         {
@@ -210,8 +210,8 @@
           "labelEn": "shelf",
           "preposition": "on",
           "anchor": {
-            "xPct": 87,
-            "yPct": 42
+            "xPct": 88,
+            "yPct": 62
           }
         },
         {
@@ -219,8 +219,8 @@
           "labelEn": "carpet",
           "preposition": "on",
           "anchor": {
-            "xPct": 75,
-            "yPct": 83
+            "xPct": 80,
+            "yPct": 88
           }
         }
       ]
@@ -266,7 +266,8 @@
           "id": "football",
           "word": "football",
           "isPlural": false,
-          "sprite": "item-football.png"
+          "sprite": "item-football.png",
+          "scale": 0.7
         },
         {
           "id": "toys",
@@ -303,13 +304,15 @@
           "id": "puppy",
           "word": "puppy",
           "isPlural": false,
-          "sprite": "item-puppy.png"
+          "sprite": "item-puppy.png",
+          "scale": 0.78
         },
         {
           "id": "kitten",
           "word": "kitten",
           "isPlural": false,
-          "sprite": "item-kitten.png"
+          "sprite": "item-kitten.png",
+          "scale": 0.78
         }
       ],
       "questionAudio": {
@@ -339,13 +342,15 @@
           "id": "keys",
           "word": "keys",
           "isPlural": true,
-          "sprite": "item-keys.png"
+          "sprite": "item-keys.png",
+          "scale": 0.65
         },
         {
           "id": "wallet",
           "word": "wallet",
           "isPlural": false,
-          "sprite": "item-wallet.png"
+          "sprite": "item-wallet.png",
+          "scale": 0.7
         },
         {
           "id": "newspaper",
@@ -382,7 +387,8 @@
           "id": "handbag",
           "word": "handbag",
           "isPlural": false,
-          "sprite": "item-handbag.png"
+          "sprite": "item-handbag.png",
+          "scale": 0.75
         },
         {
           "id": "necklace",
