@@ -43,11 +43,15 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
     root.innerHTML = `
       <div class="screen">
         ${scatterShapes()}
-        <div class="scene-stage">
-          <img class="scene-bg" src="${IMG(r.scene.background)}" alt="">
-          <span class="scene-item" style="left:${r.location.anchor.xPct}%;top:${r.location.anchor.yPct}%"><img src="${IMG(r.item.sprite)}" alt=""></span>
-          <img class="character" src="${IMG(r.character.portrait)}" alt="">
-          <div class="bubble">🔊 ${r.questionText}</div>
+        <div class="qrow">
+          <div class="scene-stage">
+            <img class="scene-bg" src="${IMG(r.scene.background)}" alt="">
+            <span class="scene-item" style="left:${r.location.anchor.xPct}%;top:${r.location.anchor.yPct}%"><img src="${IMG(r.item.sprite)}" alt=""></span>
+          </div>
+          <div class="mascot">
+            <img class="character" src="${IMG(r.character.portrait)}" alt="">
+            <div class="bubble">🔊 ${r.questionText}</div>
+          </div>
         </div>
         <div class="hint">老师按 → / 空格 进入下一步</div>
       </div>`;
