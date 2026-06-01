@@ -16,12 +16,18 @@ body {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; overflow: hidden;
 }
-.shape { position: absolute; opacity: 0.9; }
+.shape { position: absolute; opacity: 0.9; will-change: transform; }
 .shape.dot { border-radius: 50%; }
+.shape.ring { border-radius: 50%; background: transparent !important; border: 6px solid var(--cyan); }
+.shape.sq { border-radius: 6px; }
 .shape.tri {
-  width: 0; height: 0; border-left: 20px solid transparent;
-  border-right: 20px solid transparent; border-bottom: 34px solid var(--cyan);
+  width: 0; height: 0; border-left: 18px solid transparent;
+  border-right: 18px solid transparent; border-bottom: 30px solid var(--cyan);
 }
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+@keyframes floatx { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(14px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes twinkle { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
 .title { font-size: 4rem; font-weight: 900; color: var(--pink); text-shadow: 4px 4px 0 var(--yellow); }
 .subtitle { color: #888; font-size: 1.2rem; }
 .btn-primary {
@@ -33,10 +39,21 @@ body {
 .scene-stage { position: relative; width: min(90vw, 1100px); aspect-ratio: 16/9; }
 .scene-bg { width: 100%; height: 100%; object-fit: contain; }
 .scene-item {
-  position: absolute; width: 9%; transform: translate(-50%, -50%);
-  animation: bob 1.4s ease-in-out infinite;
+  position: absolute; width: 17%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center;
 }
-@keyframes bob { 0%,100% { transform: translate(-50%,-50%); } 50% { transform: translate(-50%,-62%); } }
+.scene-item::before {
+  content: ""; position: absolute; inset: -24%; border-radius: 50%; z-index: -1;
+  background: radial-gradient(circle, rgba(255,255,255,.92), rgba(255,255,255,0) 70%);
+  animation: glow 1.7s ease-in-out infinite;
+}
+.scene-item img {
+  width: 100%; height: 100%; object-fit: contain;
+  filter: drop-shadow(0 5px 6px rgba(0,0,0,.2));
+  animation: bob 1.7s ease-in-out infinite;
+}
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9%); } }
+@keyframes glow { 0%, 100% { transform: scale(.85); opacity: .5; } 50% { transform: scale(1.12); opacity: 1; } }
 .character { position: absolute; left: 3%; bottom: 4%; width: 18%; }
 .bubble {
   position: absolute; left: 22%; bottom: 14%; max-width: 46%;

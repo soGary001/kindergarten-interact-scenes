@@ -3,11 +3,27 @@ import type { ViewModel } from "./app-controller";
 const IMG = (file: string) => `/assets/img/${file}`; // served from public/ in dev and dist
 
 function scatterShapes(): string {
-  return `
-    <span class="shape dot" style="top:6%;left:8%;width:42px;height:42px;background:var(--yellow)"></span>
-    <span class="shape tri" style="bottom:10%;right:9%"></span>
-    <span class="shape dot" style="top:14%;right:16%;width:28px;height:28px;background:var(--purple)"></span>
-    <span class="shape dot" style="bottom:16%;left:14%;width:34px;height:34px;background:var(--green)"></span>`;
+  const dots = [
+    "top:4%;left:6%;width:40px;height:40px;background:var(--yellow);animation:floaty 4s ease-in-out infinite",
+    "top:3%;left:38%;width:24px;height:24px;background:var(--pink);animation:twinkle 2.6s ease-in-out infinite",
+    "top:7%;right:7%;width:34px;height:34px;background:var(--purple);animation:floaty 5s ease-in-out infinite .5s",
+    "top:33%;left:3%;width:30px;height:30px;background:var(--green);animation:floatx 4.5s ease-in-out infinite",
+    "top:62%;right:4%;width:30px;height:30px;background:var(--cyan);animation:floaty 3.8s ease-in-out infinite .3s",
+    "bottom:5%;left:28%;width:22px;height:22px;background:var(--cyan);animation:twinkle 3s ease-in-out infinite .4s",
+    "bottom:6%;right:28%;width:30px;height:30px;background:var(--yellow);animation:floaty 4.2s ease-in-out infinite",
+  ].map((s) => `<span class="shape dot" style="${s}"></span>`).join("");
+  const squares = [
+    "top:18%;right:5%;width:30px;height:30px;background:var(--pink);animation:spin 9s linear infinite",
+    "bottom:15%;left:5%;width:26px;height:26px;background:var(--purple);animation:spin 11s linear infinite",
+    "top:50%;left:7%;width:22px;height:22px;background:var(--yellow);animation:spin 8s linear infinite reverse",
+  ].map((s) => `<span class="shape sq" style="${s}"></span>`).join("");
+  const tris = [
+    "bottom:9%;right:11%;animation:floaty 4s ease-in-out infinite",
+    "top:13%;left:21%;animation:spin 12s linear infinite",
+    "bottom:30%;right:6%;border-bottom-color:var(--pink);animation:floaty 5s ease-in-out infinite .6s",
+  ].map((s) => `<span class="shape tri" style="${s}"></span>`).join("");
+  const ring = `<span class="shape ring" style="top:42%;right:9%;width:30px;height:30px;animation:floaty 6s ease-in-out infinite"></span>`;
+  return dots + squares + tris + ring;
 }
 
 export function renderView(root: HTMLElement, vm: ViewModel): void {
@@ -29,8 +45,7 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
         ${scatterShapes()}
         <div class="scene-stage">
           <img class="scene-bg" src="${IMG(r.scene.background)}" alt="">
-          <img class="scene-item" src="${IMG(r.item.sprite)}" alt=""
-               style="left:${r.location.anchor.xPct}%;top:${r.location.anchor.yPct}%">
+          <span class="scene-item" style="left:${r.location.anchor.xPct}%;top:${r.location.anchor.yPct}%"><img src="${IMG(r.item.sprite)}" alt=""></span>
           <img class="character" src="${IMG(r.character.portrait)}" alt="">
           <div class="bubble">🔊 ${r.questionText}</div>
         </div>
