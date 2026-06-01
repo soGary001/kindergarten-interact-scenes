@@ -2,7 +2,7 @@
   "scenes": [
     {
       "id": "living-room",
-      "background": "scene-living-room.svg",
+      "background": "scene-living-room.png",
       "locations": [
         {
           "id": "table",
@@ -98,7 +98,7 @@
     },
     {
       "id": "boy-room",
-      "background": "scene-boy-room.svg",
+      "background": "scene-boy-room.png",
       "locations": [
         {
           "id": "door",
@@ -167,7 +167,7 @@
     },
     {
       "id": "girl-outdoor",
-      "background": "scene-girl-outdoor.svg",
+      "background": "scene-girl-outdoor.png",
       "locations": [
         {
           "id": "station",
@@ -230,14 +230,14 @@
     {
       "id": "grandma",
       "nameEn": "Grandma",
-      "portrait": "char-grandma.svg",
+      "portrait": "char-grandma.png",
       "sceneId": "living-room",
       "items": [
         {
           "id": "glasses",
           "word": "glasses",
           "isPlural": true,
-          "sprite": "item-glasses.svg"
+          "sprite": "item-glasses.png"
         }
       ],
       "questionAudio": {
@@ -259,20 +259,20 @@
     {
       "id": "boy",
       "nameEn": "Little Boy",
-      "portrait": "char-boy.svg",
+      "portrait": "char-boy.png",
       "sceneId": "boy-room",
       "items": [
         {
           "id": "football",
           "word": "football",
           "isPlural": false,
-          "sprite": "item-football.svg"
+          "sprite": "item-football.png"
         },
         {
           "id": "toys",
           "word": "toys",
           "isPlural": true,
-          "sprite": "item-toys.svg"
+          "sprite": "item-toys.png"
         }
       ],
       "questionAudio": {
@@ -295,20 +295,20 @@
     {
       "id": "girl",
       "nameEn": "Little Girl",
-      "portrait": "char-girl.svg",
+      "portrait": "char-girl.png",
       "sceneId": "girl-outdoor",
       "items": [
         {
           "id": "puppy",
           "word": "puppy",
           "isPlural": false,
-          "sprite": "item-puppy.svg"
+          "sprite": "item-puppy.png"
         },
         {
           "id": "kitten",
           "word": "kitten",
           "isPlural": false,
-          "sprite": "item-kitten.svg"
+          "sprite": "item-kitten.png"
         }
       ],
       "questionAudio": {
@@ -331,26 +331,26 @@
     {
       "id": "dad",
       "nameEn": "Dad",
-      "portrait": "char-dad.svg",
+      "portrait": "char-dad.png",
       "sceneId": "living-room",
       "items": [
         {
           "id": "keys",
           "word": "keys",
           "isPlural": true,
-          "sprite": "item-keys.svg"
+          "sprite": "item-keys.png"
         },
         {
           "id": "wallet",
           "word": "wallet",
           "isPlural": false,
-          "sprite": "item-wallet.svg"
+          "sprite": "item-wallet.png"
         },
         {
           "id": "newspaper",
           "word": "newspaper",
           "isPlural": false,
-          "sprite": "item-newspaper.svg"
+          "sprite": "item-newspaper.png"
         }
       ],
       "questionAudio": {
@@ -374,26 +374,26 @@
     {
       "id": "mom",
       "nameEn": "Mom",
-      "portrait": "char-mom.svg",
+      "portrait": "char-mom.png",
       "sceneId": "living-room",
       "items": [
         {
           "id": "handbag",
           "word": "handbag",
           "isPlural": false,
-          "sprite": "item-handbag.svg"
+          "sprite": "item-handbag.png"
         },
         {
           "id": "necklace",
           "word": "necklace",
           "isPlural": false,
-          "sprite": "item-necklace.svg"
+          "sprite": "item-necklace.png"
         },
         {
           "id": "ring",
           "word": "ring",
           "isPlural": false,
-          "sprite": "item-ring.svg"
+          "sprite": "item-ring.png"
         }
       ],
       "questionAudio": {
