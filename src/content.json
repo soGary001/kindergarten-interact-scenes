@@ -9,8 +9,8 @@
           "labelEn": "table",
           "preposition": "on",
           "anchor": {
-            "xPct": 20,
-            "yPct": 70
+            "xPct": 38,
+            "yPct": 66
           }
         },
         {
@@ -18,8 +18,8 @@
           "labelEn": "TV cabinet",
           "preposition": "on",
           "anchor": {
-            "xPct": 64,
-            "yPct": 60
+            "xPct": 11,
+            "yPct": 56
           }
         },
         {
@@ -27,8 +27,8 @@
           "labelEn": "chair",
           "preposition": "on",
           "anchor": {
-            "xPct": 30,
-            "yPct": 66
+            "xPct": 27,
+            "yPct": 53
           }
         },
         {
@@ -36,8 +36,8 @@
           "labelEn": "sofa",
           "preposition": "on",
           "anchor": {
-            "xPct": 50,
-            "yPct": 72
+            "xPct": 65,
+            "yPct": 55
           }
         },
         {
@@ -45,8 +45,8 @@
           "labelEn": "windowsill",
           "preposition": "on",
           "anchor": {
-            "xPct": 80,
-            "yPct": 35
+            "xPct": 42,
+            "yPct": 26
           }
         },
         {
@@ -54,8 +54,8 @@
           "labelEn": "lamp",
           "preposition": "by",
           "anchor": {
-            "xPct": 72,
-            "yPct": 50
+            "xPct": 61,
+            "yPct": 44
           }
         },
         {
@@ -63,8 +63,8 @@
           "labelEn": "carpet",
           "preposition": "on",
           "anchor": {
-            "xPct": 50,
-            "yPct": 88
+            "xPct": 41,
+            "yPct": 80
           }
         },
         {
@@ -72,8 +72,8 @@
           "labelEn": "wardrobe",
           "preposition": "in",
           "anchor": {
-            "xPct": 88,
-            "yPct": 65
+            "xPct": 82,
+            "yPct": 47
           }
         },
         {
@@ -81,8 +81,8 @@
           "labelEn": "bookshelf",
           "preposition": "on",
           "anchor": {
-            "xPct": 12,
-            "yPct": 30
+            "xPct": 90,
+            "yPct": 55
           }
         },
         {
@@ -90,8 +90,8 @@
           "labelEn": "pillow",
           "preposition": "under",
           "anchor": {
-            "xPct": 35,
-            "yPct": 50
+            "xPct": 55,
+            "yPct": 55
           }
         }
       ]
@@ -105,8 +105,8 @@
           "labelEn": "door",
           "preposition": "by",
           "anchor": {
-            "xPct": 15,
-            "yPct": 55
+            "xPct": 29,
+            "yPct": 63
           }
         },
         {
@@ -114,8 +114,8 @@
           "labelEn": "grass",
           "preposition": "on",
           "anchor": {
-            "xPct": 78,
-            "yPct": 80
+            "xPct": 50,
+            "yPct": 60
           }
         },
         {
@@ -123,8 +123,8 @@
           "labelEn": "shelf",
           "preposition": "on",
           "anchor": {
-            "xPct": 40,
-            "yPct": 30
+            "xPct": 14,
+            "yPct": 22
           }
         },
         {
@@ -132,8 +132,8 @@
           "labelEn": "chair",
           "preposition": "on",
           "anchor": {
-            "xPct": 30,
-            "yPct": 66
+            "xPct": 16,
+            "yPct": 54
           }
         },
         {
@@ -141,8 +141,8 @@
           "labelEn": "sofa",
           "preposition": "on",
           "anchor": {
-            "xPct": 55,
-            "yPct": 70
+            "xPct": 82,
+            "yPct": 60
           }
         },
         {
@@ -150,8 +150,8 @@
           "labelEn": "windowsill",
           "preposition": "on",
           "anchor": {
-            "xPct": 85,
-            "yPct": 32
+            "xPct": 81,
+            "yPct": 37
           }
         },
         {
@@ -159,8 +159,8 @@
           "labelEn": "carpet",
           "preposition": "on",
           "anchor": {
-            "xPct": 50,
-            "yPct": 86
+            "xPct": 46,
+            "yPct": 85
           }
         }
       ]
@@ -174,8 +174,8 @@
           "labelEn": "station",
           "preposition": "at",
           "anchor": {
-            "xPct": 18,
-            "yPct": 50
+            "xPct": 11,
+            "yPct": 56
           }
         },
         {
@@ -183,8 +183,8 @@
           "labelEn": "park",
           "preposition": "in",
           "anchor": {
-            "xPct": 40,
-            "yPct": 70
+            "xPct": 32,
+            "yPct": 64
           }
         },
         {
@@ -192,8 +192,8 @@
           "labelEn": "garden",
           "preposition": "in",
           "anchor": {
-            "xPct": 62,
-            "yPct": 72
+            "xPct": 58,
+            "yPct": 60
           }
         },
         {
@@ -201,8 +201,8 @@
           "labelEn": "balcony",
           "preposition": "on",
           "anchor": {
-            "xPct": 82,
-            "yPct": 40
+            "xPct": 88,
+            "yPct": 28
           }
         },
         {
@@ -210,8 +210,8 @@
           "labelEn": "shelf",
           "preposition": "on",
           "anchor": {
-            "xPct": 30,
-            "yPct": 34
+            "xPct": 87,
+            "yPct": 42
           }
         },
         {
@@ -219,8 +219,8 @@
           "labelEn": "carpet",
           "preposition": "on",
           "anchor": {
-            "xPct": 55,
-            "yPct": 88
+            "xPct": 75,
+            "yPct": 83
           }
         }
       ]
