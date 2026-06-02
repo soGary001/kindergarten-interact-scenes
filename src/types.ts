@@ -1,6 +1,7 @@
 export interface ItemDef {
   id: string;          // "glasses"
   word: string;        // "glasses" (English noun shown/spoken)
+  wordZh?: string;     // "眼镜" (Chinese gloss shown under the English question)
   isPlural: boolean;   // glasses -> true (affects "is/are")
   sprite: string;      // filename under assets/img/, e.g. "item-glasses.svg"
   scale?: number;      // size multiplier on the base sprite width (default 1)
@@ -41,6 +42,7 @@ export interface Round {
   location: LocationDef;
   luckyNumber: number;        // 1..10
   questionText: string;       // "Where are my glasses?"
+  questionTextZh: string;     // "我的眼镜在哪里呀？" (Chinese gloss)
   expectedAnswer: string;     // "They are on the windowsill."
   questionAudio: string;      // filename or ""
   thanksAudio: string;        // filename or ""

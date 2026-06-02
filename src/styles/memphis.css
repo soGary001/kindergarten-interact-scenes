@@ -29,12 +29,15 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes twinkle { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
 .title { font-size: 4rem; font-weight: 900; color: var(--pink); text-shadow: 4px 4px 0 var(--yellow); }
-.subtitle { color: #888; font-size: 1.2rem; }
+.subtitle { color: #666; font-size: 1.6rem; font-weight: 800; line-height: 1.45; margin: 8px 0 26px; }
+.sub-en { display: block; font-size: 0.95rem; font-weight: 600; color: #aaa; margin-top: 6px; }
 .btn-primary {
-  font: inherit; font-size: 1.8rem; font-weight: 800; cursor: pointer;
-  padding: 18px 56px; color: #fff; background: var(--pink);
+  font: inherit; cursor: pointer; display: inline-flex; align-items: baseline; gap: 10px;
+  padding: 16px 52px; color: #fff; background: var(--pink);
   border: none; border-radius: 40px; box-shadow: 5px 5px 0 var(--pink-dk);
 }
+.btn-zh { font-size: 1.9rem; font-weight: 900; }
+.btn-en { font-size: 1.15rem; font-weight: 700; opacity: 0.92; }
 .btn-primary:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--pink-dk); }
 .qrow {
   display: flex; align-items: center; justify-content: center;
@@ -64,16 +67,22 @@ body {
 @keyframes glow { 0%, 100% { transform: scale(.85); opacity: .5; } 50% { transform: scale(1.12); opacity: 1; } }
 .bubble {
   background: #fff; border: 4px solid var(--pink); border-radius: 24px;
-  padding: 14px 20px; font-size: 1.5rem; font-weight: 700; box-shadow: 4px 4px 0 var(--pink);
-  position: relative;
+  padding: 14px 20px; box-shadow: 4px 4px 0 var(--pink);
+  position: relative; text-align: center;
 }
+.bubble-en { font-size: 1.6rem; font-weight: 800; color: var(--ink); }
+.bubble-zh { font-size: 1.05rem; font-weight: 600; color: #cf7aa6; margin-top: 6px; }
 /* speech-bubble tail pointing up to the character */
 .bubble::before {
   content: ""; position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
   border: 9px solid transparent; border-bottom-color: var(--pink);
 }
 .mascot .bubble { margin-top: 14px; max-width: 100%; }
-.hint { position: absolute; bottom: 18px; right: 24px; color: #aaa; font-size: 0.95rem; }
+.hint { position: absolute; bottom: 16px; right: 24px; color: #aaa; font-size: 1rem; font-weight: 700; text-align: right; }
+.hint-en { display: block; font-size: 0.78rem; font-weight: 600; color: #c4c4c4; margin-top: 1px; }
+.reward-line { text-align: center; line-height: 1.4; margin: 8px 0; }
+.reward-en { display: block; font-size: 1.7rem; font-weight: 800; color: #7B1FA2; }
+.reward-zh { display: block; font-size: 1.1rem; font-weight: 600; color: #9c6fb0; margin-top: 4px; }
 .lucky {
   font-size: 7rem; font-weight: 900; color: #fff; background: var(--purple);
   width: 200px; height: 200px; border-radius: 50%; display: flex; align-items: center;

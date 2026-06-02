@@ -32,8 +32,8 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
       <div class="screen">
         ${scatterShapes()}
         <div class="title">English Fun Time! 🎉</div>
-        <p class="subtitle">幼儿园英语口语比赛</p>
-        <button class="btn-primary" data-action="start">▶ 开始 Start</button>
+        <p class="subtitle">英语欢乐时光<span class="sub-en">幼儿园英语口语比赛 · Kindergarten English Speaking Contest</span></p>
+        <button class="btn-primary" data-action="start"><span class="btn-zh">▶ 开始</span><span class="btn-en">Start</span></button>
       </div>`;
     return;
   }
@@ -50,10 +50,13 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
           </div>
           <div class="mascot">
             <img class="character" src="${IMG(r.character.portrait)}" alt="">
-            <div class="bubble">🔊 ${r.questionText}</div>
+            <div class="bubble">
+              <div class="bubble-en">🔊 ${r.questionText}</div>
+              <div class="bubble-zh">${r.questionTextZh}</div>
+            </div>
           </div>
         </div>
-        <div class="hint">老师按 → / 空格 进入下一步</div>
+        <div class="hint">老师按 空格 / → 进入下一步<span class="hint-en">Press Space / → for next</span></div>
       </div>`;
     return;
   }
@@ -64,8 +67,8 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
       ${[..."🎊⭐🎈✨🌈"].map((c, i) =>
         `<span class="confetti" style="left:${(i + 1) * 16}%;animation-delay:${i * 0.3}s">${c}</span>`).join("")}
       <img class="character" style="position:static;width:140px" src="${IMG(r.character.portrait)}" alt="">
-      <p class="subtitle" style="font-size:1.6rem;color:#7B1FA2">Thank you! Here is your lucky number…</p>
+      <p class="reward-line"><span class="reward-en">Thank you! Here is your lucky number…</span><span class="reward-zh">谢谢你！这是你的幸运数字…</span></p>
       <div class="lucky">${r.luckyNumber}</div>
-      <div class="hint">老师按 → / 空格 回到开始</div>
+      <div class="hint">老师按 空格 / → 回到开始<span class="hint-en">Back to start (Space / →)</span></div>
     </div>`;
 }

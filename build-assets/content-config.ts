@@ -1,4 +1,4 @@
-export interface ConfigItem { id: string; word: string; isPlural: boolean; sprite: string; scale?: number; }
+export interface ConfigItem { id: string; word: string; wordZh?: string; isPlural: boolean; sprite: string; scale?: number; }
 export interface ConfigLocation { id: string; labelEn: string; preposition: string; anchor: { xPct: number; yPct: number }; }
 export interface ConfigScene { id: string; background: string; locations: ConfigLocation[]; }
 export interface ConfigCharacter { id: string; nameEn: string; persona: string; portrait: string; sceneId: string; items: ConfigItem[]; }
@@ -52,28 +52,28 @@ export const CONTENT_CONFIG: ContentConfig = {
   scenes: [livingRoom, boyScene, girlScene],
   characters: [
     { id: "grandma", nameEn: "Grandma", persona: "a warm, gentle grandmother", portrait: "char-grandma.png", sceneId: "living-room",
-      items: [{ id: "glasses", word: "glasses", isPlural: true, sprite: "item-glasses.png" }] },
+      items: [{ id: "glasses", word: "glasses", wordZh: "眼镜", isPlural: true, sprite: "item-glasses.png" }] },
     { id: "boy", nameEn: "Little Boy", persona: "an energetic, cheerful little boy", portrait: "char-boy.png", sceneId: "boy-room",
       items: [
-        { id: "football", word: "football", isPlural: false, sprite: "item-football.png", scale: 0.7 },
-        { id: "toys", word: "toys", isPlural: true, sprite: "item-toys.png", scale: 1.5 },
+        { id: "football", word: "football", wordZh: "足球", isPlural: false, sprite: "item-football.png", scale: 0.7 },
+        { id: "toys", word: "toys", wordZh: "玩具", isPlural: true, sprite: "item-toys.png", scale: 1.5 },
       ] },
     { id: "girl", nameEn: "Little Girl", persona: "a sweet, curious little girl", portrait: "char-girl.png", sceneId: "girl-outdoor",
       items: [
-        { id: "puppy", word: "puppy", isPlural: false, sprite: "item-puppy.png", scale: 0.78 },
-        { id: "kitten", word: "kitten", isPlural: false, sprite: "item-kitten.png", scale: 0.78 },
+        { id: "puppy", word: "puppy", wordZh: "小狗", isPlural: false, sprite: "item-puppy.png", scale: 0.78 },
+        { id: "kitten", word: "kitten", wordZh: "小猫", isPlural: false, sprite: "item-kitten.png", scale: 0.78 },
       ] },
     { id: "dad", nameEn: "Dad", persona: "a calm, friendly father", portrait: "char-dad.png", sceneId: "living-room",
       items: [
-        { id: "keys", word: "keys", isPlural: true, sprite: "item-keys.png", scale: 0.65 },
-        { id: "wallet", word: "wallet", isPlural: false, sprite: "item-wallet.png", scale: 0.7 },
-        { id: "newspaper", word: "newspaper", isPlural: false, sprite: "item-newspaper.png" },
+        { id: "keys", word: "keys", wordZh: "钥匙", isPlural: true, sprite: "item-keys.png", scale: 0.65 },
+        { id: "wallet", word: "wallet", wordZh: "钱包", isPlural: false, sprite: "item-wallet.png", scale: 0.7 },
+        { id: "newspaper", word: "newspaper", wordZh: "报纸", isPlural: false, sprite: "item-newspaper.png" },
       ] },
     { id: "mom", nameEn: "Mom", persona: "a kind, gentle mother", portrait: "char-mom.png", sceneId: "living-room",
       items: [
-        { id: "handbag", word: "handbag", isPlural: false, sprite: "item-handbag.png", scale: 0.75 },
-        { id: "necklace", word: "necklace", isPlural: false, sprite: "item-necklace.png", scale: 0.6 },
-        { id: "ring", word: "ring", isPlural: false, sprite: "item-ring.png", scale: 0.6 },
+        { id: "handbag", word: "handbag", wordZh: "手提包", isPlural: false, sprite: "item-handbag.png", scale: 0.75 },
+        { id: "necklace", word: "necklace", wordZh: "项链", isPlural: false, sprite: "item-necklace.png", scale: 0.6 },
+        { id: "ring", word: "ring", wordZh: "戒指", isPlural: false, sprite: "item-ring.png", scale: 0.6 },
       ] },
   ],
 };

@@ -1,5 +1,5 @@
 import type { Content, Round } from "./types";
-import { buildQuestionText, buildExpectedAnswer } from "./answer";
+import { buildQuestionText, buildQuestionTextZh, buildExpectedAnswer } from "./answer";
 
 type Rng = () => number;
 
@@ -24,6 +24,7 @@ export function selectRound(content: Content, rng: Rng = Math.random): Round {
     location,
     luckyNumber,
     questionText: buildQuestionText(item),
+    questionTextZh: buildQuestionTextZh(item),
     expectedAnswer: buildExpectedAnswer(item, location),
     questionAudio: character.questionAudio[item.id] ?? "",
     thanksAudio: character.thanksAudio[String(luckyNumber)] ?? "",

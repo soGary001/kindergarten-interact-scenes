@@ -236,6 +236,7 @@
         {
           "id": "glasses",
           "word": "glasses",
+          "wordZh": "眼镜",
           "isPlural": true,
           "sprite": "item-glasses.png"
         }
@@ -265,6 +266,7 @@
         {
           "id": "football",
           "word": "football",
+          "wordZh": "足球",
           "isPlural": false,
           "sprite": "item-football.png",
           "scale": 0.7
@@ -272,6 +274,7 @@
         {
           "id": "toys",
           "word": "toys",
+          "wordZh": "玩具",
           "isPlural": true,
           "sprite": "item-toys.png",
           "scale": 1.5
@@ -303,6 +306,7 @@
         {
           "id": "puppy",
           "word": "puppy",
+          "wordZh": "小狗",
           "isPlural": false,
           "sprite": "item-puppy.png",
           "scale": 0.78
@@ -310,6 +314,7 @@
         {
           "id": "kitten",
           "word": "kitten",
+          "wordZh": "小猫",
           "isPlural": false,
           "sprite": "item-kitten.png",
           "scale": 0.78
@@ -341,6 +346,7 @@
         {
           "id": "keys",
           "word": "keys",
+          "wordZh": "钥匙",
           "isPlural": true,
           "sprite": "item-keys.png",
           "scale": 0.65
@@ -348,6 +354,7 @@
         {
           "id": "wallet",
           "word": "wallet",
+          "wordZh": "钱包",
           "isPlural": false,
           "sprite": "item-wallet.png",
           "scale": 0.7
@@ -355,6 +362,7 @@
         {
           "id": "newspaper",
           "word": "newspaper",
+          "wordZh": "报纸",
           "isPlural": false,
           "sprite": "item-newspaper.png"
         }
@@ -386,6 +394,7 @@
         {
           "id": "handbag",
           "word": "handbag",
+          "wordZh": "手提包",
           "isPlural": false,
           "sprite": "item-handbag.png",
           "scale": 0.75
@@ -393,6 +402,7 @@
         {
           "id": "necklace",
           "word": "necklace",
+          "wordZh": "项链",
           "isPlural": false,
           "sprite": "item-necklace.png",
           "scale": 0.6
@@ -400,6 +410,7 @@
         {
           "id": "ring",
           "word": "ring",
+          "wordZh": "戒指",
           "isPlural": false,
           "sprite": "item-ring.png",
           "scale": 0.6
