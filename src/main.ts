@@ -120,6 +120,13 @@ window.addEventListener("keydown", (e) => {
 
 controller.init();
 
+// Register the service worker (production only) so the app is installable as a PWA.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+
 // Dev-only: lets the preview drive voice phases for visual checks. Stripped from
 // production builds (import.meta.env.DEV is false in `vite build`).
 if (import.meta.env.DEV) {
