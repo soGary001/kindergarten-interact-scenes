@@ -11,6 +11,15 @@ export function questionPrompt(persona: string, word: string, isPlural: boolean)
   ].join(" ");
 }
 
+export function encouragePrompt(persona: string): string {
+  return [
+    `You are ${persona} speaking to a young child in a kindergarten English game.`,
+    `The child just gave a wrong answer. Say ONE short, warm, encouraging English line:`,
+    `tell them it's okay and to try again. Gentle and kind.`,
+    `Output only the spoken line, no quotes, max 12 words.`,
+  ].join(" ");
+}
+
 export function thanksPrompt(persona: string, luckyNumber: number): string {
   return [
     `You are ${persona} speaking to a young child in a kindergarten English game.`,

@@ -73,7 +73,6 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
             <img class="character" src="${IMG(r.character.portrait)}" alt="">
             <div class="bubble">
               <div class="bubble-en">🔊 ${r.questionText}</div>
-              <div class="bubble-zh">${r.questionTextZh}</div>
             </div>
             ${voiceStatus(vm)}
           </div>

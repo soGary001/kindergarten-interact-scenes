@@ -83,10 +83,13 @@ async function listenLoop(token: number, round: Round): Promise<void> {
     }, 700);
   } else {
     controller.setVoice("wrong", transcript || null);
-    // gentle pause, then automatically listen again
-    window.setTimeout(() => {
-      if (token === roundToken && currentScreen === "question") void listenLoop(token, round);
-    }, 2600);
+    // The character gently encourages the child in their own voice; only after that
+    // clip finishes do we listen again (so we don't record the encouragement itself).
+    audio.play(round.encourageAudio, () => {
+      window.setTimeout(() => {
+        if (token === roundToken && currentScreen === "question") void listenLoop(token, round);
+      }, 600);
+    });
   }
 }
 

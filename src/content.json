@@ -255,7 +255,8 @@
         "8": "grandma-t-8.wav",
         "9": "grandma-t-9.wav",
         "10": "grandma-t-10.wav"
-      }
+      },
+      "encourageAudio": "grandma-encourage.wav"
     },
     {
       "id": "boy",
@@ -295,7 +296,8 @@
         "8": "boy-t-8.wav",
         "9": "boy-t-9.wav",
         "10": "boy-t-10.wav"
-      }
+      },
+      "encourageAudio": "boy-encourage.wav"
     },
     {
       "id": "girl",
@@ -335,7 +337,8 @@
         "8": "girl-t-8.wav",
         "9": "girl-t-9.wav",
         "10": "girl-t-10.wav"
-      }
+      },
+      "encourageAudio": "girl-encourage.wav"
     },
     {
       "id": "dad",
@@ -383,7 +386,8 @@
         "8": "dad-t-8.wav",
         "9": "dad-t-9.wav",
         "10": "dad-t-10.wav"
-      }
+      },
+      "encourageAudio": "dad-encourage.wav"
     },
     {
       "id": "mom",
@@ -432,7 +436,8 @@
         "8": "mom-t-8.wav",
         "9": "mom-t-9.wav",
         "10": "mom-t-10.wav"
-      }
+      },
+      "encourageAudio": "mom-encourage.wav"
     }
   ]
 }

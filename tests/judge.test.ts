@@ -14,6 +14,7 @@ function roundWithLocation(labelEn: string): Round {
     expectedAnswer: "",
     questionAudio: "",
     thanksAudio: "",
+    encourageAudio: "",
   };
 }
 

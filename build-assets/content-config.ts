@@ -78,11 +78,11 @@ export const CONTENT_CONFIG: ContentConfig = {
   ],
 };
 
-export type AudioKind = "question" | "thanks";
+export type AudioKind = "question" | "thanks" | "encourage";
 export interface AudioLine {
   characterId: string;
   kind: AudioKind;
-  key: string;        // itemId for question; "1".."10" for thanks
+  key: string;        // itemId for question; "1".."10" for thanks; "" for encourage
   filename: string;   // output audio filename (.wav)
 }
 
@@ -95,6 +95,8 @@ export function enumerateAudioLines(cfg: ContentConfig): AudioLine[] {
     for (let n = 1; n <= 10; n++) {
       lines.push({ characterId: c.id, kind: "thanks", key: String(n), filename: `${c.id}-t-${n}.wav` });
     }
+    // One gentle "try again" line per character, spoken in their own voice.
+    lines.push({ characterId: c.id, kind: "encourage", key: "", filename: `${c.id}-encourage.wav` });
   }
   return lines;
 }

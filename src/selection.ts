@@ -28,5 +28,6 @@ export function selectRound(content: Content, rng: Rng = Math.random): Round {
     expectedAnswer: buildExpectedAnswer(item, location),
     questionAudio: character.questionAudio[item.id] ?? "",
     thanksAudio: character.thanksAudio[String(luckyNumber)] ?? "",
+    encourageAudio: character.encourageAudio ?? "",
   };
 }

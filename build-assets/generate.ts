@@ -1,10 +1,11 @@
 import { writeFile, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import { CONTENT_CONFIG, enumerateAudioLines, type ContentConfig } from "./content-config";
 import { MimoClient } from "./mimo-client";
-import { questionPrompt, thanksPrompt } from "./prompts";
+import { questionPrompt, thanksPrompt, encouragePrompt } from "./prompts";
 import type { Content, CharacterDef } from "../src/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -30,6 +31,7 @@ export function buildManifest(cfg: ContentConfig, audioByLine: Map<string, strin
       id: c.id, nameEn: c.nameEn, portrait: c.portrait, sceneId: c.sceneId,
       items: c.items.map((i) => ({ ...i })),
       questionAudio, thanksAudio,
+      encourageAudio: audioByLine.get(`${c.id}:encourage:`) ?? "",
     };
   });
   return { scenes, characters };
@@ -61,17 +63,26 @@ async function main(): Promise<void> {
   await mkdir(audioDir, { recursive: true });
 
   for (const line of lines) {
+    const mapKey = `${line.characterId}:${line.kind}:${line.key}`;
+    // Resume: keep already-generated clips (so re-runs only create new lines).
+    if (existsSync(resolve(audioDir, line.filename))) {
+      audioByLine.set(mapKey, line.filename);
+      console.log(`• skip ${line.filename} (exists)`);
+      continue;
+    }
     const ch = CONTENT_CONFIG.characters.find((c) => c.id === line.characterId)!;
     let spoken: string;
     if (line.kind === "question") {
       const item = ch.items.find((i) => i.id === line.key)!;
       spoken = await client.chat(textModel, questionPrompt(ch.persona, item.word, item.isPlural));
+    } else if (line.kind === "encourage") {
+      spoken = await client.chat(textModel, encouragePrompt(ch.persona));
     } else {
       spoken = await client.chat(textModel, thanksPrompt(ch.persona, Number(line.key)));
     }
     const audio = await client.tts(ttsModel, spoken, voiceByCharacter[ch.id]);
     await writeFile(resolve(audioDir, line.filename), Buffer.from(audio));
-    audioByLine.set(`${line.characterId}:${line.kind}:${line.key}`, line.filename);
+    audioByLine.set(mapKey, line.filename);
     console.log(`✓ ${line.filename}: ${spoken}`);
   }
 

@@ -28,6 +28,7 @@ export interface CharacterDef {
   items: ItemDef[];
   questionAudio: Record<string, string>;        // itemId -> audio filename ("" if none yet)
   thanksAudio: Record<string, string>;          // "1".."10" -> audio filename ("" if none yet)
+  encourageAudio?: string;                      // this character's "try again" clip (their voice)
 }
 
 export interface Content {
@@ -46,4 +47,5 @@ export interface Round {
   expectedAnswer: string;     // "They are on the windowsill."
   questionAudio: string;      // filename or ""
   thanksAudio: string;        // filename or ""
+  encourageAudio: string;     // character's "try again" clip, played on a wrong answer
 }
