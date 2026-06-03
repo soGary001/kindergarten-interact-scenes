@@ -27,15 +27,16 @@ fn grant_media_permissions(app: &tauri::App) {
   };
   let _ = window.with_webview(|webview| {
     use webview2_com::Microsoft::Web::WebView2::Win32::{
-      COREWEBVIEW2_PERMISSION_KIND_CAMERA, COREWEBVIEW2_PERMISSION_KIND_MICROPHONE,
-      COREWEBVIEW2_PERMISSION_STATE_ALLOW,
+      COREWEBVIEW2_PERMISSION_KIND, COREWEBVIEW2_PERMISSION_KIND_CAMERA,
+      COREWEBVIEW2_PERMISSION_KIND_MICROPHONE, COREWEBVIEW2_PERMISSION_STATE_ALLOW,
     };
     use webview2_com::PermissionRequestedEventHandler;
     unsafe {
       if let Ok(core) = webview.controller().CoreWebView2() {
         let handler = PermissionRequestedEventHandler::create(Box::new(|_sender, args| {
           if let Some(args) = args {
-            let kind = args.PermissionKind()?;
+            let mut kind = COREWEBVIEW2_PERMISSION_KIND(0);
+            args.PermissionKind(&mut kind)?;
             if kind == COREWEBVIEW2_PERMISSION_KIND_MICROPHONE
               || kind == COREWEBVIEW2_PERMISSION_KIND_CAMERA
             {
