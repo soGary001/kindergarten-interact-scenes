@@ -6,6 +6,7 @@ import { AudioPlayer } from "./audio-player";
 import { Recorder } from "./recorder";
 import { recognize } from "./asr-client";
 import { isAnswerCorrect } from "./judge";
+import { isNative, recognizeOnceNative } from "./native-asr";
 import rawContent from "./content.json";
 
 const root = document.querySelector<HTMLDivElement>("#app")!;
@@ -54,22 +55,28 @@ function beginQuestion(): void {
 const sleep = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
 const alive = (token: number) => token === roundToken && currentScreen === "question";
 
-async function listenLoop(token: number, round: Round): Promise<void> {
-  await ensureMic();
-  if (!alive(token)) return;
-  if (!recorder.available() || !micReady) return; // no mic → teacher advances manually
+// Native (Tauri): Rust cpal mic + streaming Alibaba ASR; partials stream into the caption.
+async function captureNative(token: number): Promise<string | null> {
+  controller.setVoice("listening");
+  const transcript = await recognizeOnceNative((t) => {
+    if (alive(token)) controller.setVoice("listening", t);
+  }, 9000);
+  return alive(token) ? transcript : null;
+}
 
+// Web/PWA: browser mic + chunked Vercel ASR, streaming the growing transcript into the caption.
+async function captureWeb(token: number): Promise<string | null> {
+  await ensureMic();
+  if (!alive(token)) return null;
+  if (!recorder.available() || !micReady) return null; // no mic → teacher advances manually
   controller.setVoice("listening");
   let live;
   try {
     live = await recorder.begin({ maxMs: 9000, silenceMs: 1500 });
   } catch {
     if (token === roundToken) controller.setVoice("asking");
-    return;
+    return null;
   }
-
-  // Live caption loop: re-recognize the growing clip each beat (self-paced by the
-  // ASR latency) and stream the text into the bottom caption bar.
   let recording = true;
   void live.finished.then(() => (recording = false));
   let last = "";
@@ -80,24 +87,30 @@ async function listenLoop(token: number, round: Round): Promise<void> {
     }
     try {
       const { transcript } = await recognize(live.snapshotBase64(), "audio/wav");
-      if (!alive(token)) { live.stop(); return; }
+      if (!alive(token)) { live.stop(); return null; }
       last = transcript || last;
       controller.setVoice("listening", last);
     } catch {
       await sleep(300);
     }
   }
+  if (!alive(token)) return null;
+  controller.setVoice("checking", last || null);
+  try {
+    return (await recognize(live.snapshotBase64(), "audio/wav")).transcript || last;
+  } catch {
+    return last;
+  }
+}
+
+async function listenLoop(token: number, round: Round): Promise<void> {
   if (!alive(token)) return;
 
-  // Final authoritative pass on the whole clip (no chunk-split word errors).
-  controller.setVoice("checking", last || null);
-  let transcript = last;
-  try {
-    transcript = (await recognize(live.snapshotBase64(), "audio/wav")).transcript || last;
-  } catch {
-    /* keep last */
-  }
-  if (!alive(token)) return;
+  const transcript = isNative()
+    ? await captureNative(token)
+    : await captureWeb(token);
+
+  if (transcript === null || !alive(token)) return;
   controller.setVoice("checking", transcript || null);
 
   if (transcript && isAnswerCorrect(transcript, round)) {
@@ -118,7 +131,7 @@ async function listenLoop(token: number, round: Round): Promise<void> {
 
 function startTurn(): void {
   if (currentScreen !== "standby") return;
-  void ensureMic(); // user gesture → request mic permission for the session
+  if (!isNative()) void ensureMic(); // web: request mic permission on the gesture (native uses cpal)
   controller.start();
   beginQuestion();
 }

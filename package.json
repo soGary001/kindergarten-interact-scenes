@@ -23,6 +23,7 @@
     "vitest": "^2"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2",
     "dotenv": "^16"
   }
 }

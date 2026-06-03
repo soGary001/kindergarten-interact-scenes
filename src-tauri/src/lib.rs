@@ -1,6 +1,15 @@
+mod asr;
+mod commands;
+mod mic;
+mod secret;
+mod xor;
+
+use commands::*;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
+    .manage(AppState::default())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -9,45 +18,9 @@ pub fn run() {
             .build(),
         )?;
       }
-      // Windows WebView2 denies getUserMedia by default; auto-grant mic/camera so the
-      // voice feature works in the packaged .exe.
-      #[cfg(target_os = "windows")]
-      grant_media_permissions(app);
       Ok(())
     })
+    .invoke_handler(tauri::generate_handler![asr_start, asr_stop, check_connectivity])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
-}
-
-#[cfg(target_os = "windows")]
-fn grant_media_permissions(app: &tauri::App) {
-  use tauri::Manager;
-  let Some(window) = app.get_webview_window("main") else {
-    return;
-  };
-  let _ = window.with_webview(|webview| {
-    use webview2_com::Microsoft::Web::WebView2::Win32::{
-      COREWEBVIEW2_PERMISSION_KIND, COREWEBVIEW2_PERMISSION_KIND_CAMERA,
-      COREWEBVIEW2_PERMISSION_KIND_MICROPHONE, COREWEBVIEW2_PERMISSION_STATE_ALLOW,
-    };
-    use webview2_com::PermissionRequestedEventHandler;
-    unsafe {
-      if let Ok(core) = webview.controller().CoreWebView2() {
-        let handler = PermissionRequestedEventHandler::create(Box::new(|_sender, args| {
-          if let Some(args) = args {
-            let mut kind = COREWEBVIEW2_PERMISSION_KIND(0);
-            args.PermissionKind(&mut kind)?;
-            if kind == COREWEBVIEW2_PERMISSION_KIND_MICROPHONE
-              || kind == COREWEBVIEW2_PERMISSION_KIND_CAMERA
-            {
-              args.SetState(COREWEBVIEW2_PERMISSION_STATE_ALLOW)?;
-            }
-          }
-          Ok(())
-        }));
-        let mut token = Default::default();
-        let _ = core.add_PermissionRequested(&handler, &mut token);
-      }
-    }
-  });
 }

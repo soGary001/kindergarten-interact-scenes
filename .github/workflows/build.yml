@@ -20,13 +20,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Install deps
         run: npm ci
-      # No asset generation in CI: content.json + audio are committed,
-      # so the API key NEVER enters CI and both OS builds ship identical content.
+      # Native apps capture the mic with cpal and stream to Alibaba's realtime ASR
+      # directly; the key is embedded (obfuscated) at build time via build.rs.
       - name: Build app
         uses: tauri-apps/tauri-action@v0
         env:
-          # Packaged apps call the Hong Kong ASR function for speech recognition.
-          VITE_API_BASE: https://kindergarten-interact-scenes.vercel.app
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
       - name: Upload installers
         uses: actions/upload-artifact@v4
         with:
@@ -61,7 +60,7 @@ jobs:
           echo "--- manifest perms ---"; grep -n "uses-permission\|<application" "$M" | head
       - name: Build release APK (universal, stripped/optimized, unsigned)
         env:
-          VITE_API_BASE: https://kindergarten-interact-scenes.vercel.app
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
         run: npm run tauri android build -- --apk
       - name: Sign the APK with a generated key (installable; internal use)
         run: |
