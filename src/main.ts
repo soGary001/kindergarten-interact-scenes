@@ -72,7 +72,7 @@ async function captureWeb(token: number): Promise<string | null> {
   controller.setVoice("listening");
   let live;
   try {
-    live = await recorder.begin({ maxMs: 9000, silenceMs: 1500 });
+    live = await recorder.begin({ maxMs: 12000, silenceMs: 2000 });
   } catch {
     if (token === roundToken) controller.setVoice("asking");
     return null;

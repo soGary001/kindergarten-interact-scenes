@@ -20,45 +20,64 @@ export function isNative(): boolean {
  */
 export async function recognizeOnceNative(
   onPartial?: (text: string) => void,
-  maxMs = 9000,
+  maxMs = 15000,
+  silenceMs = 2000,
 ): Promise<string> {
-  let finalText = "";
+  let finalText = ""; // finalized sentences so far
+  let partial = ""; // current in-progress sentence
   let done = false;
   const unlistens: UnlistenFn[] = [];
   let resolveFn!: (s: string) => void;
   const result = new Promise<string>((r) => (resolveFn = r));
 
+  const text = () => (finalText + " " + partial).trim();
+
+  let silenceTimer = 0;
+  // Only stop after the child PAUSES for silenceMs — never on the first sentence end,
+  // so a mid-sentence pause doesn't cut them off. (maxMs is the hard ceiling.)
+  const bump = () => {
+    window.clearTimeout(silenceTimer);
+    silenceTimer = window.setTimeout(() => void finish(), silenceMs);
+  };
+
   const finish = async () => {
     if (done) return;
     done = true;
+    window.clearTimeout(silenceTimer);
     try {
       await invoke("asr_stop");
     } catch {
       /* ignore */
     }
+    // brief grace so a trailing final (flushed by finish-task) is captured
+    await new Promise((r) => window.setTimeout(r, 300));
     unlistens.forEach((u) => u());
-    resolveFn(finalText.trim());
+    resolveFn(text());
   };
 
   unlistens.push(
     await listen<string>("asr://partial", (e) => {
-      onPartial?.((finalText + " " + e.payload).trim());
+      partial = e.payload;
+      onPartial?.(text());
+      bump();
     }),
   );
   unlistens.push(
     await listen<string>("asr://final", (e) => {
       finalText = (finalText + " " + e.payload).trim();
-      onPartial?.(finalText);
-      void finish();
+      partial = "";
+      onPartial?.(text());
+      bump();
     }),
   );
   unlistens.push(await listen<string>("asr://error", () => void finish()));
 
-  const timer = window.setTimeout(() => void finish(), maxMs);
-  unlistens.push((() => window.clearTimeout(timer)) as UnlistenFn);
+  const hard = window.setTimeout(() => void finish(), maxMs);
+  unlistens.push((() => window.clearTimeout(hard)) as UnlistenFn);
+  unlistens.push((() => window.clearTimeout(silenceTimer)) as UnlistenFn);
 
   try {
-    await invoke("asr_start");
+    await invoke("asr_start"); // no initial silence timer → child gets up to maxMs to start
   } catch {
     void finish();
   }
