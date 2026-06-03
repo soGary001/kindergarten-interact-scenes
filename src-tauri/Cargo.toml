@@ -24,6 +24,10 @@ log = "0.4"
 tauri = { version = "2.11.2", features = [] }
 tauri-plugin-log = "2"
 
+# Windows-only: auto-grant WebView2 microphone permission (matches Tauri's webview2-com).
+[target.'cfg(windows)'.dependencies]
+webview2-com = "0.38"
+
 # Shrink release binaries / Android .so files (debug APK was ~500MB; release strips + optimizes for size).
 [profile.release]
 strip = true
