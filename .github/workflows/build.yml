@@ -24,6 +24,9 @@ jobs:
       # so the API key NEVER enters CI and both OS builds ship identical content.
       - name: Build app
         uses: tauri-apps/tauri-action@v0
+        env:
+          # Packaged apps call the Hong Kong ASR function for speech recognition.
+          VITE_API_BASE: https://kindergarten-interact-scenes.vercel.app
       - name: Upload installers
         uses: actions/upload-artifact@v4
         with:
@@ -51,7 +54,14 @@ jobs:
         run: echo "NDK_HOME=$ANDROID_NDK_ROOT" >> "$GITHUB_ENV"
       - name: Initialize the Android project
         run: npm run tauri android init -- --ci
+      - name: Add RECORD_AUDIO permission to the Android manifest
+        run: |
+          M=src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          grep -q RECORD_AUDIO "$M" || sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application#' "$M"
+          echo "--- manifest perms ---"; grep -n "uses-permission\|<application" "$M" | head
       - name: Build release APK (universal, stripped/optimized, unsigned)
+        env:
+          VITE_API_BASE: https://kindergarten-interact-scenes.vercel.app
         run: npm run tauri android build -- --apk
       - name: Sign the APK with a generated key (installable; internal use)
         run: |
