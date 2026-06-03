@@ -2,6 +2,27 @@ import type { ViewModel } from "./app-controller";
 
 const IMG = (file: string) => `/assets/img/${file}`; // served from public/ in dev and dist
 
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+}
+
+// Voice sub-status shown under the speech bubble while on the question screen.
+function voiceStatus(vm: ViewModel): string {
+  switch (vm.voicePhase) {
+    case "listening":
+      return `<div class="voice voice-listening"><span class="mic-dot"></span>请回答<span class="voice-en">🎤 Speak now</span></div>`;
+    case "checking":
+      return `<div class="voice voice-checking">🤔 听一听…<span class="voice-en">Checking…</span></div>`;
+    case "wrong":
+      return `<div class="voice voice-wrong">
+        ${vm.transcript ? `<div class="heard">你说 You said：“${escapeHtml(vm.transcript)}”</div>` : ""}
+        <div class="encourage">没关系，再试一次！<span class="voice-en">Try again, you can do it! 💪</span></div>
+      </div>`;
+    default:
+      return "";
+  }
+}
+
 function scatterShapes(): string {
   const dots = [
     "top:4%;left:6%;width:40px;height:40px;background:var(--yellow);animation:floaty 4s ease-in-out infinite",
@@ -54,9 +75,10 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
               <div class="bubble-en">🔊 ${r.questionText}</div>
               <div class="bubble-zh">${r.questionTextZh}</div>
             </div>
+            ${voiceStatus(vm)}
           </div>
         </div>
-        <div class="hint">老师按 空格 / → 进入下一步<span class="hint-en">Press Space / → for next</span></div>
+        <div class="hint">老师按 → 可跳过<span class="hint-en">Teacher: → to skip</span></div>
       </div>`;
     return;
   }

@@ -3,15 +3,22 @@ const AUDIO = (file: string) => `/assets/audio/${file}`; // served from public/ 
 export class AudioPlayer {
   private current: HTMLAudioElement | null = null;
 
-  async play(file: string): Promise<void> {
+  // `onEnded` fires when playback finishes — or right away if the clip is missing or
+  // autoplay is blocked — so callers can chain the next step (e.g. start recording).
+  async play(file: string, onEnded?: () => void): Promise<void> {
     this.stop();
-    if (!file) return;
+    if (!file) {
+      onEnded?.();
+      return;
+    }
     const el = new Audio(AUDIO(file));
     this.current = el;
+    if (onEnded) el.addEventListener("ended", onEnded, { once: true });
     try {
       await el.play();
     } catch {
       // Missing file or autoplay block — degrade silently; subtitle still shows.
+      onEnded?.();
     }
   }
 
