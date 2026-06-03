@@ -16,7 +16,10 @@ export default async function handler(req, res) {
     const out = await transcribe(body?.audio, body?.mime, process.env.DASHSCOPE_API_KEY);
     return res.status(200).json(out);
   } catch (e) {
-    return res.status(500).json({ error: String(e?.message || e) });
+    return res.status(500).json({
+      error: String(e?.message || e),
+      cause: String(e?.cause?.code || e?.cause?.message || e?.cause || ""),
+    });
   }
 }
 
