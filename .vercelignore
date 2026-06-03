@@ -1,0 +1,16 @@
+# Only the web app + api/ need to deploy. Exclude everything heavy/irrelevant so the
+# upload stays small (src-tauri/target can be gigabytes; ci-artifacts hundreds of MB).
+src-tauri
+ci-artifacts
+build-assets
+.github
+docs
+.superpowers
+.claude
+dist
+node_modules
+.git
+*.dmg
+*.exe
+*.apk
+tests
