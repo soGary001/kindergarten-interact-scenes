@@ -51,43 +51,66 @@ function beginQuestion(): void {
   });
 }
 
+const sleep = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
+const alive = (token: number) => token === roundToken && currentScreen === "question";
+
 async function listenLoop(token: number, round: Round): Promise<void> {
   await ensureMic();
-  if (token !== roundToken || currentScreen !== "question") return;
+  if (!alive(token)) return;
   if (!recorder.available() || !micReady) return; // no mic → teacher advances manually
 
   controller.setVoice("listening");
-  let rec;
+  let live;
   try {
-    rec = await recorder.record({ maxMs: 8000, silenceMs: 1500 });
+    live = await recorder.begin({ maxMs: 9000, silenceMs: 1500 });
   } catch {
     if (token === roundToken) controller.setVoice("asking");
     return;
   }
-  if (token !== roundToken || currentScreen !== "question") return;
 
-  controller.setVoice("checking");
-  let transcript = "";
-  try {
-    transcript = (await recognize(rec.base64, rec.mime)).transcript;
-  } catch {
-    // network/ASR error — treat like a wrong attempt so the child can retry
+  // Live caption loop: re-recognize the growing clip each beat (self-paced by the
+  // ASR latency) and stream the text into the bottom caption bar.
+  let recording = true;
+  void live.finished.then(() => (recording = false));
+  let last = "";
+  while (recording && alive(token)) {
+    if (!live.hasSpeech()) {
+      await sleep(250);
+      continue;
+    }
+    try {
+      const { transcript } = await recognize(live.snapshotBase64(), "audio/wav");
+      if (!alive(token)) { live.stop(); return; }
+      last = transcript || last;
+      controller.setVoice("listening", last);
+    } catch {
+      await sleep(300);
+    }
   }
-  if (token !== roundToken || currentScreen !== "question") return;
+  if (!alive(token)) return;
+
+  // Final authoritative pass on the whole clip (no chunk-split word errors).
+  controller.setVoice("checking", last || null);
+  let transcript = last;
+  try {
+    transcript = (await recognize(live.snapshotBase64(), "audio/wav")).transcript || last;
+  } catch {
+    /* keep last */
+  }
+  if (!alive(token)) return;
+  controller.setVoice("checking", transcript || null);
 
   if (transcript && isAnswerCorrect(transcript, round)) {
-    controller.setVoice("checking");
-    // correct → brief beat → jump to the lucky-number page
     window.setTimeout(() => {
-      if (token === roundToken && currentScreen === "question") controller.next();
+      if (alive(token)) controller.next(); // correct → jump to the lucky-number page
     }, 700);
   } else {
     controller.setVoice("wrong", transcript || null);
-    // The character gently encourages the child in their own voice; only after that
-    // clip finishes do we listen again (so we don't record the encouragement itself).
+    // The character gently encourages in their own voice; re-listen only after it ends
+    // (so the mic doesn't record the encouragement).
     audio.play(round.encourageAudio, () => {
       window.setTimeout(() => {
-        if (token === roundToken && currentScreen === "question") void listenLoop(token, round);
+        if (alive(token)) void listenLoop(token, round);
       }, 600);
     });
   }

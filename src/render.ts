@@ -14,13 +14,20 @@ function voiceStatus(vm: ViewModel): string {
     case "checking":
       return `<div class="voice voice-checking">🤔 听一听…<span class="voice-en">Checking…</span></div>`;
     case "wrong":
-      return `<div class="voice voice-wrong">
-        ${vm.transcript ? `<div class="heard">你说 You said：“${escapeHtml(vm.transcript)}”</div>` : ""}
-        <div class="encourage">没关系，再试一次！<span class="voice-en">Try again, you can do it! 💪</span></div>
-      </div>`;
+      return `<div class="voice voice-wrong"><div class="encourage">没关系，再试一次！<span class="voice-en">Try again, you can do it! 💪</span></div></div>`;
     default:
       return "";
   }
+}
+
+// Live caption bar at the bottom of the screen showing what the child is saying.
+function bottomCaption(vm: ViewModel): string {
+  if (vm.voicePhase !== "listening" && vm.voicePhase !== "checking") return "";
+  const t = vm.transcript ? escapeHtml(vm.transcript) : "";
+  if (!t) {
+    return `<div class="caption caption-empty">🎤 <span class="cap-dots"><i></i><i></i><i></i></span><span class="cap-hint">在听你说呀…</span></div>`;
+  }
+  return `<div class="caption"><span class="cap-emoji">🗣️</span><span class="cap-text">${t}</span></div>`;
 }
 
 function scatterShapes(): string {
@@ -77,6 +84,7 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
             ${voiceStatus(vm)}
           </div>
         </div>
+        ${bottomCaption(vm)}
         <div class="hint">老师按 → 可跳过<span class="hint-en">Teacher: → to skip</span></div>
       </div>`;
     return;
