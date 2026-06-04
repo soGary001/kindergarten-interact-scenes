@@ -13,11 +13,8 @@ function voiceStatus(vm: ViewModel): string {
       return `<div class="voice voice-listening"><span class="mic-dot"></span>请回答<span class="voice-en">🎤 Speak now</span></div>`;
     case "checking":
       return `<div class="voice voice-checking">🤔 听一听…<span class="voice-en">Checking…</span></div>`;
-    case "wrong": {
-      // Lip/word hint ("口型提示"): show the target word so the child/teacher can read it aloud.
-      const hint = vm.round?.location.labelEn ?? "";
-      return `<div class="voice voice-wrong"><div class="encourage">没关系，再试一次！<span class="voice-en">Try again, you can do it! 💪</span></div>${hint ? `<div class="hint-word">💡 跟我读 Say：<b>${escapeHtml(hint)}</b></div>` : ""}</div>`;
-    }
+    case "wrong":
+      return `<div class="voice voice-wrong"><div class="encourage">没关系，再试一次！<span class="voice-en">Try again, you can do it! 💪</span></div></div>`;
     default:
       return "";
   }

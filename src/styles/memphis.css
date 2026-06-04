@@ -118,8 +118,6 @@ body {
 .voice-wrong .heard { font-size: 1rem; font-weight: 600; color: #999; margin-bottom: 6px; }
 .voice-wrong .encourage { font-size: 1.3rem; color: var(--pink-dk); }
 .voice-wrong .encourage .voice-en { color: #cf7aa6; }
-.voice-wrong .hint-word { margin-top: 8px; font-size: 1.15rem; color: var(--pink-dk); font-weight: 700; }
-.voice-wrong .hint-word b { display: inline-block; margin-left: 4px; padding: 2px 12px; border-radius: 12px; background: #fff; border: 2px dashed var(--pink); color: #e0559a; letter-spacing: 1px; }
 
 /* --- live caption bar (bottom of the screen, shows the child's speech) --- */
 .caption {
