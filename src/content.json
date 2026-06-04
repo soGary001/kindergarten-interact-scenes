@@ -47,7 +47,8 @@
           "anchor": {
             "xPct": 42,
             "yPct": 43
-          }
+          },
+          "maxItemScale": 0.7
         },
         {
           "id": "desk-lamp",
@@ -152,7 +153,8 @@
           "anchor": {
             "xPct": 81,
             "yPct": 57
-          }
+          },
+          "maxItemScale": 0.7
         },
         {
           "id": "carpet",

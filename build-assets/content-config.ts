@@ -1,5 +1,5 @@
 export interface ConfigItem { id: string; word: string; wordZh?: string; isPlural: boolean; sprite: string; scale?: number; }
-export interface ConfigLocation { id: string; labelEn: string; preposition: string; anchor: { xPct: number; yPct: number }; }
+export interface ConfigLocation { id: string; labelEn: string; preposition: string; anchor: { xPct: number; yPct: number }; maxItemScale?: number; }
 export interface ConfigScene { id: string; background: string; locations: ConfigLocation[]; }
 export interface ConfigCharacter { id: string; nameEn: string; persona: string; portrait: string; sceneId: string; items: ConfigItem[]; }
 export interface ContentConfig { scenes: ConfigScene[]; characters: ConfigCharacter[]; }
@@ -12,7 +12,7 @@ const livingRoom: ConfigScene = {
     { id: "tv-cabinet", labelEn: "TV cabinet", preposition: "on",    anchor: { xPct: 11, yPct: 64 } },
     { id: "chair",      labelEn: "chair",      preposition: "on",    anchor: { xPct: 27, yPct: 62 } },
     { id: "sofa",       labelEn: "sofa",       preposition: "on",    anchor: { xPct: 66, yPct: 62 } },
-    { id: "windowsill", labelEn: "windowsill", preposition: "on",    anchor: { xPct: 42, yPct: 43 } },
+    { id: "windowsill", labelEn: "windowsill", preposition: "on",    anchor: { xPct: 42, yPct: 43 }, maxItemScale: 0.7 },
     { id: "desk-lamp",  labelEn: "lamp",       preposition: "by",    anchor: { xPct: 58, yPct: 58 } },
     { id: "carpet",     labelEn: "carpet",     preposition: "on",    anchor: { xPct: 41, yPct: 85 } },
     { id: "wardrobe",   labelEn: "wardrobe",   preposition: "in",    anchor: { xPct: 82, yPct: 60 } },
@@ -30,7 +30,7 @@ const boyScene: ConfigScene = {
     { id: "shelf",      labelEn: "shelf",      preposition: "on", anchor: { xPct: 14, yPct: 30 } },
     { id: "chair",      labelEn: "chair",      preposition: "on", anchor: { xPct: 16, yPct: 66 } },
     { id: "sofa",       labelEn: "sofa",       preposition: "on", anchor: { xPct: 82, yPct: 66 } },
-    { id: "windowsill", labelEn: "windowsill", preposition: "on", anchor: { xPct: 81, yPct: 57 } },
+    { id: "windowsill", labelEn: "windowsill", preposition: "on", anchor: { xPct: 81, yPct: 57 }, maxItemScale: 0.7 },
     { id: "carpet",     labelEn: "carpet",     preposition: "on", anchor: { xPct: 46, yPct: 90 } },
   ],
 };

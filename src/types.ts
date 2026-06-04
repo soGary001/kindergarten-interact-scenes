@@ -12,6 +12,7 @@ export interface LocationDef {
   labelEn: string;     // "windowsill"
   preposition: string; // "on" | "in" | "by" | "under" | "at"
   anchor: { xPct: number; yPct: number }; // 0..100, where the sprite is placed
+  maxItemScale?: number; // cap the rendered item size here (e.g. a small windowsill)
 }
 
 export interface SceneDef {

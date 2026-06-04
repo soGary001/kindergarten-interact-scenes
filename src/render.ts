@@ -74,7 +74,7 @@ export function renderView(root: HTMLElement, vm: ViewModel): void {
         <div class="qrow">
           <div class="scene-stage">
             <img class="scene-bg" src="${IMG(r.scene.background)}" alt="">
-            <span class="scene-item" style="left:${r.location.anchor.xPct}%;top:${r.location.anchor.yPct}%;width:${17 * (r.item.scale ?? 1)}%"><img src="${IMG(r.item.sprite)}" alt=""></span>
+            <span class="scene-item" style="left:${r.location.anchor.xPct}%;top:${r.location.anchor.yPct}%;width:${17 * Math.min(r.item.scale ?? 1, r.location.maxItemScale ?? Infinity)}%"><img src="${IMG(r.item.sprite)}" alt=""></span>
           </div>
           <div class="mascot">
             <img class="character" src="${IMG(r.character.portrait)}" alt="">
