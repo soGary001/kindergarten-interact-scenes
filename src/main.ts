@@ -56,11 +56,20 @@ const sleep = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
 const alive = (token: number) => token === roundToken && currentScreen === "question";
 
 // Native (Tauri): Rust cpal mic + streaming Alibaba ASR; partials stream into the caption.
+// Show "preparing" until the mic is actually live (the connection can be slow on Windows),
+// then "speak now" with a generous 15s window so a hesitant child isn't cut off.
 async function captureNative(token: number): Promise<string | null> {
-  controller.setVoice("listening");
-  const transcript = await recognizeOnceNative((t) => {
-    if (alive(token)) controller.setVoice("listening", t);
-  }, 9000);
+  controller.setVoice("connecting");
+  const transcript = await recognizeOnceNative(
+    (t) => {
+      if (alive(token)) controller.setVoice("listening", t);
+    },
+    15000,
+    2000,
+    () => {
+      if (alive(token)) controller.setVoice("listening");
+    },
+  );
   return alive(token) ? transcript : null;
 }
 

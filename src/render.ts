@@ -9,6 +9,8 @@ function escapeHtml(s: string): string {
 // Voice sub-status shown under the speech bubble while on the question screen.
 function voiceStatus(vm: ViewModel): string {
   switch (vm.voicePhase) {
+    case "connecting":
+      return `<div class="voice voice-checking">⏳ 准备中，请稍等…<span class="voice-en">Get ready…</span></div>`;
     case "listening":
       return `<div class="voice voice-listening"><span class="mic-dot"></span>请回答<span class="voice-en">🎤 Speak now</span></div>`;
     case "checking":

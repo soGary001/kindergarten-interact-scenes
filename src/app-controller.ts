@@ -4,8 +4,8 @@ import { selectRound } from "./selection";
 export type Screen = "standby" | "question" | "reward";
 
 // Voice sub-phase while on the question screen:
-//  asking → (audio plays) → listening (recording) → checking (ASR) → wrong (retry) | correct→next
-export type VoicePhase = "asking" | "listening" | "checking" | "wrong";
+//  asking → (audio plays) → connecting (mic warming up) → listening (recording) → checking (ASR) → wrong (retry) | correct→next
+export type VoicePhase = "asking" | "connecting" | "listening" | "checking" | "wrong";
 
 export interface ViewModel {
   screen: Screen;
