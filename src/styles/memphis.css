@@ -119,6 +119,26 @@ body {
 .voice-wrong .encourage { font-size: 1.3rem; color: var(--pink-dk); }
 .voice-wrong .encourage .voice-en { color: #cf7aa6; }
 
+/* --- push-to-talk buttons --- */
+.btn-rec {
+  margin-top: 14px; border: none; cursor: pointer; border-radius: 24px;
+  padding: 14px 28px; font-family: inherit; font-weight: 900; color: #fff;
+  display: inline-flex; flex-direction: column; align-items: center; gap: 1px;
+  box-shadow: 0 6px 0 rgba(0,0,0,.14), 0 8px 18px rgba(0,0,0,.18);
+  transition: transform .08s ease, box-shadow .08s ease; line-height: 1.15;
+}
+.btn-rec:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,.14), 0 3px 10px rgba(0,0,0,.18); }
+.btn-rec .rec-zh { font-size: 1.5rem; letter-spacing: 1px; }
+.btn-rec .rec-en { font-size: 0.9rem; font-weight: 700; opacity: .92; }
+.btn-rec .rec-ico { font-size: 1.7rem; }
+.btn-rec-start { background: linear-gradient(135deg, #5ec6a8, #36a98c); animation: recbob 1.8s ease-in-out infinite; }
+@keyframes recbob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.btn-rec-stop { background: linear-gradient(135deg, #ff7eb3, #ff5a8a); }
+.btn-rec-stop .rec-dot {
+  display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  margin-bottom: 4px; animation: micpulse 1s ease-in-out infinite;
+}
+
 /* --- live caption bar (bottom of the screen, shows the child's speech) --- */
 .caption {
   position: absolute; left: 50%; bottom: 4.5vh; transform: translateX(-50%);

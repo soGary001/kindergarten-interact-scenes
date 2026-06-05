@@ -3,9 +3,10 @@ import { selectRound } from "./selection";
 
 export type Screen = "standby" | "question" | "reward";
 
-// Voice sub-phase while on the question screen:
-//  asking → (audio plays) → connecting (mic warming up) → listening (recording) → checking (ASR) → wrong (retry) | correct→next
-export type VoicePhase = "asking" | "connecting" | "listening" | "checking" | "wrong";
+// Voice sub-phase while on the question screen (push-to-talk):
+//  asking → (audio plays) → ready (tap-to-speak button) → connecting (mic warming up)
+//  → recording (tap-when-done button) → checking (ASR) → wrong (retry → ready) | correct→next
+export type VoicePhase = "asking" | "ready" | "connecting" | "recording" | "checking" | "wrong";
 
 export interface ViewModel {
   screen: Screen;

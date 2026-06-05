@@ -9,10 +9,12 @@ function escapeHtml(s: string): string {
 // Voice sub-status shown under the speech bubble while on the question screen.
 function voiceStatus(vm: ViewModel): string {
   switch (vm.voicePhase) {
+    case "ready":
+      return `<button class="btn-rec btn-rec-start" data-action="rec-start"><span class="rec-ico">🎤</span><span class="rec-zh">点我说话</span><span class="rec-en">Tap to speak</span></button>`;
     case "connecting":
       return `<div class="voice voice-checking">⏳ 准备中，请稍等…<span class="voice-en">Get ready…</span></div>`;
-    case "listening":
-      return `<div class="voice voice-listening"><span class="mic-dot"></span>请回答<span class="voice-en">🎤 Speak now</span></div>`;
+    case "recording":
+      return `<button class="btn-rec btn-rec-stop" data-action="rec-stop"><span class="rec-dot"></span><span class="rec-zh">说完啦，点我</span><span class="rec-en">Tap when done</span></button>`;
     case "checking":
       return `<div class="voice voice-checking">🤔 听一听…<span class="voice-en">Checking…</span></div>`;
     case "wrong":
@@ -24,7 +26,7 @@ function voiceStatus(vm: ViewModel): string {
 
 // Live caption bar at the bottom of the screen showing what the child is saying.
 function bottomCaption(vm: ViewModel): string {
-  if (vm.voicePhase !== "listening" && vm.voicePhase !== "checking") return "";
+  if (vm.voicePhase !== "recording" && vm.voicePhase !== "checking") return "";
   const t = vm.transcript ? escapeHtml(vm.transcript) : "";
   if (!t) {
     return `<div class="caption caption-empty">🎤 <span class="cap-dots"><i></i><i></i><i></i></span><span class="cap-hint">在听你说呀…</span></div>`;

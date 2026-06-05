@@ -13,60 +13,34 @@ export function isNative(): boolean {
   }
 }
 
+/** A live recording the caller stops by hand (push-to-talk). `stop()` resolves the transcript. */
+export interface RecHandle {
+  stop(): Promise<string>;
+}
+
 /**
- * Record one spoken answer natively and resolve with the transcript. `onPartial` is
- * called with the live (growing) text for the on-screen caption. `onReady` fires once
- * the mic is actually live (the WebSocket connected) — only THEN does the maxMs ceiling
- * start, so a slow connection (e.g. Windows reaching Alibaba) doesn't eat the child's
- * speaking window and they aren't prompted to "speak now" before the mic exists.
- * Stops after `silenceMs` of silence (once the child has started), an error, or after
- * maxMs of actual listening. If the connection can't be established within connectMs,
- * resolves empty so the caller can retry.
+ * Start a manually-controlled native recording (push-to-talk). Connects the WebSocket +
+ * mic and resolves ONLY once capture is actually live — so the UI can wait before showing
+ * "speak now" (no talking into a not-yet-live mic) and there is NO timer at all: the child
+ * speaks as long as they like and the caller decides when to stop via `stop()`. `onPartial`
+ * streams the growing transcript for the on-screen caption. Rejects if the connection can't
+ * be established within connectMs, so the caller can return to the tap-to-speak button.
  */
-export async function recognizeOnceNative(
+export async function startNativeRec(
   onPartial?: (text: string) => void,
-  maxMs = 15000,
-  silenceMs = 2000,
-  onReady?: () => void,
   connectMs = 12000,
-): Promise<string> {
+): Promise<RecHandle> {
   let finalText = ""; // finalized sentences so far
   let partial = ""; // current in-progress sentence
-  let done = false;
+  let stopped = false;
   const unlistens: UnlistenFn[] = [];
-  let resolveFn!: (s: string) => void;
-  const result = new Promise<string>((r) => (resolveFn = r));
-
   const text = () => (finalText + " " + partial).trim();
-
-  let silenceTimer = 0;
-  // Only stop after the child PAUSES for silenceMs — never on the first sentence end,
-  // so a mid-sentence pause doesn't cut them off. (maxMs is the hard ceiling.)
-  const bump = () => {
-    window.clearTimeout(silenceTimer);
-    silenceTimer = window.setTimeout(() => void finish(), silenceMs);
-  };
-
-  const finish = async () => {
-    if (done) return;
-    done = true;
-    window.clearTimeout(silenceTimer);
-    try {
-      await invoke("asr_stop");
-    } catch {
-      /* ignore */
-    }
-    // brief grace so a trailing final (flushed by finish-task) is captured
-    await new Promise((r) => window.setTimeout(r, 300));
-    unlistens.forEach((u) => u());
-    resolveFn(text());
-  };
+  const cleanup = () => unlistens.forEach((u) => u());
 
   unlistens.push(
     await listen<string>("asr://partial", (e) => {
       partial = e.payload;
       onPartial?.(text());
-      bump();
     }),
   );
   unlistens.push(
@@ -74,15 +48,11 @@ export async function recognizeOnceNative(
       finalText = (finalText + " " + e.payload).trim();
       partial = "";
       onPartial?.(text());
-      bump();
     }),
   );
-  unlistens.push(await listen<string>("asr://error", () => void finish()));
-  unlistens.push((() => window.clearTimeout(silenceTimer)) as UnlistenFn);
 
-  // Connect the WebSocket + start the mic. This resolves only once capture is actually
-  // live, which can take a few seconds on a slow network. Guard it with connectMs so a
-  // hung connection doesn't block the turn forever.
+  // Connect the WebSocket + start the mic. Resolves only once capture is live (can take a
+  // few seconds on a slow link); guard with connectMs so a hung connection can't block.
   try {
     await Promise.race([
       invoke("asr_start"),
@@ -90,16 +60,29 @@ export async function recognizeOnceNative(
         window.setTimeout(() => reject(new Error("asr-connect-timeout")), connectMs),
       ),
     ]);
-  } catch {
-    void finish();
-    return result;
+  } catch (e) {
+    cleanup();
+    try {
+      await invoke("asr_stop");
+    } catch {
+      /* ignore */
+    }
+    throw e;
   }
-  if (done) return result; // turn was cancelled while connecting
 
-  // Mic is live now: tell the caller to show "speak now", and ONLY NOW arm the hard
-  // ceiling so connection latency never counts against the child's speaking time.
-  onReady?.();
-  const hard = window.setTimeout(() => void finish(), maxMs);
-  unlistens.push((() => window.clearTimeout(hard)) as UnlistenFn);
-  return result;
+  return {
+    async stop(): Promise<string> {
+      if (stopped) return text();
+      stopped = true;
+      try {
+        await invoke("asr_stop");
+      } catch {
+        /* ignore */
+      }
+      // brief grace so the trailing final (flushed by finish-task) is captured
+      await new Promise((r) => window.setTimeout(r, 400));
+      cleanup();
+      return text();
+    },
+  };
 }

@@ -6,7 +6,7 @@ import { AudioPlayer } from "./audio-player";
 import { Recorder } from "./recorder";
 import { recognize } from "./asr-client";
 import { isAnswerCorrect } from "./judge";
-import { isNative, recognizeOnceNative } from "./native-asr";
+import { isNative, startNativeRec, type RecHandle } from "./native-asr";
 import rawContent from "./content.json";
 
 const root = document.querySelector<HTMLDivElement>("#app")!;
@@ -16,11 +16,13 @@ const recorder = new Recorder();
 
 let currentScreen: ViewModel["screen"] = "standby";
 let currentRound: Round | null = null;
+let currentPhase: ViewModel["voicePhase"] = "asking";
 let roundToken = 0; // bumped on every transition; stale async voice loops bail out
 
 const controller = new AppController(content, Math.random, (vm: ViewModel) => {
   currentScreen = vm.screen;
   currentRound = vm.round;
+  currentPhase = vm.voicePhase;
   renderView(root, vm);
   if (vm.screen === "reward") audio.play(vm.round!.thanksAudio);
   else if (vm.screen === "standby") audio.stop();
@@ -41,85 +43,104 @@ function ensureMic(): Promise<void> {
   return micPromise;
 }
 
-// --- the hands-free voice round ---
+// --- push-to-talk voice round ---
+// After the question, show a "tap to speak" button. The child taps to start (the mic
+// warms up with no clock running), speaks for as long as they like, then taps "done" to
+// finish. No timing — so a slow mic connection or a hesitant child can never cut them off.
+const sleep = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
+const alive = (token: number) => token === roundToken && currentScreen === "question";
+
+let activeRec: RecHandle | null = null;
+
 function beginQuestion(): void {
   const token = ++roundToken;
   const round = currentRound;
   if (!round) return;
-  // Play the character's question, then auto-start listening when it finishes.
+  // Play the character's question, then show the tap-to-speak button.
   audio.play(round.questionAudio, () => {
-    if (token === roundToken) void listenLoop(token, round);
+    if (token === roundToken) controller.setVoice("ready");
   });
 }
 
-const sleep = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
-const alive = (token: number) => token === roundToken && currentScreen === "question";
-
-// Native (Tauri): Rust cpal mic + streaming Alibaba ASR; partials stream into the caption.
-// Show "preparing" until the mic is actually live (the connection can be slow on Windows),
-// then "speak now" with a generous 15s window so a hesitant child isn't cut off.
-async function captureNative(token: number): Promise<string | null> {
-  controller.setVoice("connecting");
-  const transcript = await recognizeOnceNative(
-    (t) => {
-      if (alive(token)) controller.setVoice("listening", t);
-    },
-    15000,
-    2000,
-    () => {
-      if (alive(token)) controller.setVoice("listening");
-    },
-  );
-  return alive(token) ? transcript : null;
+// Cancel any in-flight recording (on skip / back-to-standby).
+function cancelRec(): void {
+  if (activeRec) {
+    void activeRec.stop().catch(() => {});
+    activeRec = null;
+  }
 }
 
-// Web/PWA: browser mic + chunked Vercel ASR, streaming the growing transcript into the caption.
-async function captureWeb(token: number): Promise<string | null> {
+// Web/PWA: browser mic + chunked Vercel ASR. Effectively manual — a big max guards runaway,
+// but the child controls start/stop with the buttons.
+async function startWebRec(onPartial: (t: string) => void): Promise<RecHandle> {
   await ensureMic();
-  if (!alive(token)) return null;
-  if (!recorder.available() || !micReady) return null; // no mic → teacher advances manually
-  controller.setVoice("listening");
-  let live;
-  try {
-    live = await recorder.begin({ maxMs: 12000, silenceMs: 2000 });
-  } catch {
-    if (token === roundToken) controller.setVoice("asking");
-    return null;
-  }
-  let recording = true;
-  void live.finished.then(() => (recording = false));
+  if (!recorder.available() || !micReady) throw new Error("no mic");
+  const live = await recorder.begin({ maxMs: 60000, silenceMs: 60000 });
   let last = "";
-  while (recording && alive(token)) {
-    if (!live.hasSpeech()) {
-      await sleep(250);
-      continue;
+  let polling = true;
+  void (async () => {
+    while (polling) {
+      if (live.hasSpeech()) {
+        try {
+          const { transcript } = await recognize(live.snapshotBase64(), "audio/wav");
+          last = transcript || last;
+          onPartial(last);
+        } catch {
+          /* keep polling */
+        }
+      }
+      await sleep(400);
     }
-    try {
-      const { transcript } = await recognize(live.snapshotBase64(), "audio/wav");
-      if (!alive(token)) { live.stop(); return null; }
-      last = transcript || last;
-      controller.setVoice("listening", last);
-    } catch {
-      await sleep(300);
-    }
-  }
-  if (!alive(token)) return null;
-  controller.setVoice("checking", last || null);
-  try {
-    return (await recognize(live.snapshotBase64(), "audio/wav")).transcript || last;
-  } catch {
-    return last;
-  }
+  })();
+  return {
+    async stop(): Promise<string> {
+      polling = false;
+      live.stop();
+      try {
+        last = (await recognize(live.snapshotBase64(), "audio/wav")).transcript || last;
+      } catch {
+        /* keep last */
+      }
+      return last;
+    },
+  };
 }
 
-async function listenLoop(token: number, round: Round): Promise<void> {
+// Tap "speak": warm up the mic (no timer), then switch to the recording button.
+async function startRecording(): Promise<void> {
+  const token = roundToken;
+  if (!alive(token) || activeRec) return;
+  if (currentPhase !== "ready") return; // only from the tap-to-speak button
+  controller.setVoice("connecting");
+  let rec: RecHandle;
+  try {
+    rec = isNative()
+      ? await startNativeRec((t) => { if (alive(token)) controller.setVoice("recording", t); })
+      : await startWebRec((t) => { if (alive(token)) controller.setVoice("recording", t); });
+  } catch {
+    if (alive(token)) controller.setVoice("ready"); // mic/connection failed → let them retry
+    return;
+  }
+  if (!alive(token)) { void rec.stop().catch(() => {}); return; } // skipped while warming up
+  activeRec = rec;
+  controller.setVoice("recording");
+}
+
+// Tap "done": stop the mic, judge the answer.
+async function stopRecording(): Promise<void> {
+  const token = roundToken;
+  const round = currentRound;
+  const rec = activeRec;
+  if (!rec || !round) return;
+  activeRec = null;
+  controller.setVoice("checking");
+  let transcript = "";
+  try {
+    transcript = await rec.stop();
+  } catch {
+    transcript = "";
+  }
   if (!alive(token)) return;
-
-  const transcript = isNative()
-    ? await captureNative(token)
-    : await captureWeb(token);
-
-  if (transcript === null || !alive(token)) return;
   controller.setVoice("checking", transcript || null);
 
   if (transcript && isAnswerCorrect(transcript, round)) {
@@ -128,12 +149,9 @@ async function listenLoop(token: number, round: Round): Promise<void> {
     }, 700);
   } else {
     controller.setVoice("wrong", transcript || null);
-    // The character gently encourages in their own voice; re-listen only after it ends
-    // (so the mic doesn't record the encouragement).
+    // The character gently encourages in their own voice; then show the speak button again.
     audio.play(round.encourageAudio, () => {
-      window.setTimeout(() => {
-        if (alive(token)) void listenLoop(token, round);
-      }, 600);
+      if (alive(token)) controller.setVoice("ready");
     });
   }
 }
@@ -145,23 +163,28 @@ function startTurn(): void {
   beginQuestion();
 }
 
-// Start button (a real user gesture, so audio + mic are allowed).
+// Clicks (real user gestures, so audio + mic are allowed): Start, tap-to-speak, tap-done.
 root.addEventListener("click", (e) => {
-  if ((e.target as HTMLElement).closest("[data-action='start']")) startTurn();
+  const t = e.target as HTMLElement;
+  if (t.closest("[data-action='start']")) startTurn();
+  else if (t.closest("[data-action='rec-start']")) void startRecording();
+  else if (t.closest("[data-action='rec-stop']")) void stopRecording();
 });
 
-// Operator keyboard: advance/skip and back-to-standby. Bumping the token cancels
-// any in-flight voice loop so a skip can't be overridden by a late ASR result.
+// Operator keyboard: advance/skip and back-to-standby. Bumping the token + cancelling any
+// in-flight recording so a skip can't be overridden by a late ASR result.
 window.addEventListener("keydown", (e) => {
   if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") {
     e.preventDefault();
     if (currentScreen === "standby") startTurn();
     else {
       roundToken++;
+      cancelRec();
       controller.next();
     }
   } else if (e.key === "Escape") {
     roundToken++;
+    cancelRec();
     controller.toStandby();
   }
 });
