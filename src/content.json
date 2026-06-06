@@ -41,16 +41,6 @@
           }
         },
         {
-          "id": "windowsill",
-          "labelEn": "windowsill",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 42,
-            "yPct": 43
-          },
-          "maxItemScale": 0.7
-        },
-        {
           "id": "desk-lamp",
           "labelEn": "lamp",
           "preposition": "by",
@@ -145,16 +135,6 @@
             "xPct": 82,
             "yPct": 66
           }
-        },
-        {
-          "id": "windowsill",
-          "labelEn": "windowsill",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 81,
-            "yPct": 57
-          },
-          "maxItemScale": 0.7
         },
         {
           "id": "carpet",
