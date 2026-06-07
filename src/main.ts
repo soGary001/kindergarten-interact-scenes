@@ -52,13 +52,22 @@ const alive = (token: number) => token === roundToken && currentScreen === "ques
 
 let activeRec: RecHandle | null = null;
 
+// Short gap after a character clip ends before the "tap to speak" button appears, so the
+// speaker's audio (and its buffered tail) is fully flushed and can't echo into the mic.
+const SETTLE_MS = 400;
+function showReadyAfterAudio(token: number): void {
+  window.setTimeout(() => {
+    if (token === roundToken && currentScreen === "question") controller.setVoice("ready");
+  }, SETTLE_MS);
+}
+
 function beginQuestion(): void {
   const token = ++roundToken;
   const round = currentRound;
   if (!round) return;
-  // Play the character's question, then show the tap-to-speak button.
+  // Play the character's question, then (after a short settle) show the tap-to-speak button.
   audio.play(round.questionAudio, () => {
-    if (token === roundToken) controller.setVoice("ready");
+    if (token === roundToken) showReadyAfterAudio(token);
   });
 }
 
@@ -111,6 +120,8 @@ async function startRecording(): Promise<void> {
   const token = roundToken;
   if (!alive(token) || activeRec) return;
   if (currentPhase !== "ready") return; // only from the tap-to-speak button
+  if (audio.isPlaying()) return; // never open the mic while the character is still talking
+  audio.stop(); // belt-and-suspenders: kill any lingering playback before opening the mic
   controller.setVoice("connecting");
   let rec: RecHandle;
   try {
@@ -149,9 +160,10 @@ async function stopRecording(): Promise<void> {
     }, 700);
   } else {
     controller.setVoice("wrong", transcript || null);
-    // The character gently encourages in their own voice; then show the speak button again.
+    // The character gently encourages in their own voice; then (after a short settle so the
+    // encouragement can't echo into the mic) show the speak button again.
     audio.play(round.encourageAudio, () => {
-      if (alive(token)) controller.setVoice("ready");
+      if (alive(token)) showReadyAfterAudio(token);
     });
   }
 }
