@@ -28,7 +28,7 @@ const boyScene: ConfigScene = {
     { id: "grass",      labelEn: "grass",      preposition: "on", anchor: { xPct: 50, yPct: 70 } },
     { id: "shelf",      labelEn: "shelf",      preposition: "on", anchor: { xPct: 14, yPct: 30 } },
     { id: "chair",      labelEn: "chair",      preposition: "on", anchor: { xPct: 16, yPct: 66 } },
-    { id: "sofa",       labelEn: "sofa",       preposition: "on", anchor: { xPct: 82, yPct: 66 } },
+    { id: "sofa",       labelEn: "sofa",       preposition: "on", anchor: { xPct: 80, yPct: 74 }, maxItemScale: 0.6 },
     { id: "carpet",     labelEn: "carpet",     preposition: "on", anchor: { xPct: 46, yPct: 90 } },
   ],
 };

@@ -132,9 +132,10 @@
           "labelEn": "sofa",
           "preposition": "on",
           "anchor": {
-            "xPct": 82,
-            "yPct": 66
-          }
+            "xPct": 80,
+            "yPct": 74
+          },
+          "maxItemScale": 0.6
         },
         {
           "id": "carpet",
