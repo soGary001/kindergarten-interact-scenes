@@ -15,36 +15,36 @@ export interface ContentConfig { scenes: ConfigScene[]; characters: ConfigCharac
 // are produced by `node build-assets/gen-art.mjs`; audio by `npm run generate`.
 
 const scenes: ConfigScene[] = [
-  // 1. boy — football — under the tree
+  // 1. boy — football — under the tree (tree is on the LEFT, base ~y80 on the grass)
   { id: "yard-tree",   background: "scene-tree-yard.png",  // NEW (also used by #6)
-    locations: [{ id: "tree",  labelEn: "tree",  preposition: "under",  anchor: { xPct: 40, yPct: 72 }, maxItemScale: 0.55 }] },
-  // 2. girl — pencil — in the box
+    locations: [{ id: "tree",  labelEn: "tree",  preposition: "under",  anchor: { xPct: 22, yPct: 83 }, maxItemScale: 0.5 }] },
+  // 2. girl — pencil — in the box (open box center-left, rim ~y64)
   { id: "box-room",    background: "scene-box-room.png",   // NEW
-    locations: [{ id: "box",   labelEn: "box",   preposition: "in",     anchor: { xPct: 45, yPct: 70 }, maxItemScale: 0.5 }] },
-  // 3. grandpa — glasses — on the desk
+    locations: [{ id: "box",   labelEn: "box",   preposition: "in",     anchor: { xPct: 38, yPct: 64 }, maxItemScale: 0.42 }] },
+  // 3. grandpa — glasses — on the desk (desktop right of the lamp, ~y56)
   { id: "desk-room",   background: "scene-desk-room.png",  // NEW
-    locations: [{ id: "desk",  labelEn: "desk",  preposition: "on",     anchor: { xPct: 45, yPct: 58 }, maxItemScale: 0.5 }] },
-  // 4. mom — phone — under the pillow
+    locations: [{ id: "desk",  labelEn: "desk",  preposition: "on",     anchor: { xPct: 62, yPct: 56 }, maxItemScale: 0.42 }] },
+  // 4. mom — phone — under the pillow (pillow at bed head, left, ~x17)
   { id: "bedroom",     background: "scene-bedroom.png",    // NEW (also used by #10)
-    locations: [{ id: "pillow", labelEn: "pillow", preposition: "under", anchor: { xPct: 38, yPct: 60 }, maxItemScale: 0.45 }] },
-  // 5. brother — blocks — beside the sofa
+    locations: [{ id: "pillow", labelEn: "pillow", preposition: "under", anchor: { xPct: 21, yPct: 70 }, maxItemScale: 0.3 }] },
+  // 5. brother — blocks — beside the sofa (on the floor left-front of the sofa)
   { id: "living-sofa", background: "scene-living-room.png", // reuse
-    locations: [{ id: "sofa",  labelEn: "sofa",  preposition: "beside", anchor: { xPct: 50, yPct: 78 }, maxItemScale: 0.5 }] },
-  // 6. sister — rabbit — in the grass
+    locations: [{ id: "sofa",  labelEn: "sofa",  preposition: "beside", anchor: { xPct: 46, yPct: 84 }, maxItemScale: 0.5 }] },
+  // 6. sister — rabbit — in the grass (open grass to the right of the tree)
   { id: "grass-yard",  background: "scene-tree-yard.png",  // reuse (NEW)
-    locations: [{ id: "grass", labelEn: "grass", preposition: "in",     anchor: { xPct: 60, yPct: 82 }, maxItemScale: 0.55 }] },
-  // 7. teacher — ruler — under the desk
+    locations: [{ id: "grass", labelEn: "grass", preposition: "in",     anchor: { xPct: 64, yPct: 88 }, maxItemScale: 0.5 }] },
+  // 7. teacher — ruler — under the desk (on the floor between the desk legs, ~y87)
   { id: "classroom",   background: "scene-classroom.png",  // NEW
-    locations: [{ id: "desk",  labelEn: "desk",  preposition: "under",  anchor: { xPct: 45, yPct: 74 }, maxItemScale: 0.5 }] },
-  // 8. sister2 — cake — in the kitchen
+    locations: [{ id: "desk",  labelEn: "desk",  preposition: "under",  anchor: { xPct: 50, yPct: 88 }, maxItemScale: 0.45 }] },
+  // 8. sister2 — cake — in the kitchen (on the counter, center, ~y60)
   { id: "kitchen",     background: "scene-kitchen.png",    // NEW
-    locations: [{ id: "kitchen", labelEn: "kitchen", preposition: "in", anchor: { xPct: 50, yPct: 64 }, maxItemScale: 0.5 }] },
-  // 9. brother2 — keys — on the chair
+    locations: [{ id: "kitchen", labelEn: "kitchen", preposition: "in", anchor: { xPct: 45, yPct: 60 }, maxItemScale: 0.45 }] },
+  // 9. brother2 — keys — on the chair (the single armchair seat, left ~x30 y60)
   { id: "living-chair", background: "scene-living-room.png", // reuse
-    locations: [{ id: "chair", labelEn: "chair", preposition: "on",     anchor: { xPct: 27, yPct: 62 }, maxItemScale: 0.45 }] },
-  // 10. dad — book — on the bed
+    locations: [{ id: "chair", labelEn: "chair", preposition: "on",     anchor: { xPct: 30, yPct: 60 }, maxItemScale: 0.4 }] },
+  // 10. dad — book — on the bed (on the mattress, right of the pillow, ~x32)
   { id: "bedroom-bed", background: "scene-bedroom.png",    // reuse (NEW)
-    locations: [{ id: "bed",   labelEn: "bed",   preposition: "on",     anchor: { xPct: 55, yPct: 66 }, maxItemScale: 0.5 }] },
+    locations: [{ id: "bed",   labelEn: "bed",   preposition: "on",     anchor: { xPct: 32, yPct: 60 }, maxItemScale: 0.45 }] },
 ];
 
 export const CONTENT_CONFIG: ContentConfig = {

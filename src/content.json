@@ -1,251 +1,172 @@
 {
   "scenes": [
     {
-      "id": "living-room",
-      "background": "scene-living-room.png",
+      "id": "yard-tree",
+      "background": "scene-tree-yard.png",
       "locations": [
         {
-          "id": "table",
-          "labelEn": "table",
-          "preposition": "on",
+          "id": "tree",
+          "labelEn": "tree",
+          "preposition": "under",
           "anchor": {
-            "xPct": 38,
-            "yPct": 73
-          }
-        },
+            "xPct": 22,
+            "yPct": 83
+          },
+          "maxItemScale": 0.5
+        }
+      ]
+    },
+    {
+      "id": "box-room",
+      "background": "scene-box-room.png",
+      "locations": [
         {
-          "id": "tv-cabinet",
-          "labelEn": "TV cabinet",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 11,
-            "yPct": 64
-          }
-        },
-        {
-          "id": "chair",
-          "labelEn": "chair",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 27,
-            "yPct": 62
-          }
-        },
-        {
-          "id": "sofa",
-          "labelEn": "sofa",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 66,
-            "yPct": 62
-          }
-        },
-        {
-          "id": "desk-lamp",
-          "labelEn": "lamp",
-          "preposition": "by",
-          "anchor": {
-            "xPct": 58,
-            "yPct": 58
-          }
-        },
-        {
-          "id": "carpet",
-          "labelEn": "carpet",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 41,
-            "yPct": 85
-          }
-        },
-        {
-          "id": "wardrobe",
-          "labelEn": "wardrobe",
+          "id": "box",
+          "labelEn": "box",
           "preposition": "in",
           "anchor": {
-            "xPct": 82,
-            "yPct": 60
-          }
-        },
+            "xPct": 38,
+            "yPct": 64
+          },
+          "maxItemScale": 0.42
+        }
+      ]
+    },
+    {
+      "id": "desk-room",
+      "background": "scene-desk-room.png",
+      "locations": [
         {
-          "id": "bookshelf",
-          "labelEn": "bookshelf",
+          "id": "desk",
+          "labelEn": "desk",
           "preposition": "on",
           "anchor": {
-            "xPct": 90,
-            "yPct": 62
-          }
-        },
+            "xPct": 62,
+            "yPct": 56
+          },
+          "maxItemScale": 0.42
+        }
+      ]
+    },
+    {
+      "id": "bedroom",
+      "background": "scene-bedroom.png",
+      "locations": [
         {
           "id": "pillow",
           "labelEn": "pillow",
           "preposition": "under",
           "anchor": {
-            "xPct": 54,
-            "yPct": 62
-          }
+            "xPct": 21,
+            "yPct": 70
+          },
+          "maxItemScale": 0.3
         }
       ]
     },
     {
-      "id": "boy-room",
-      "background": "scene-boy-room.png",
+      "id": "living-sofa",
+      "background": "scene-living-room.png",
       "locations": [
         {
-          "id": "door",
-          "labelEn": "door",
-          "preposition": "by",
+          "id": "sofa",
+          "labelEn": "sofa",
+          "preposition": "beside",
           "anchor": {
-            "xPct": 29,
-            "yPct": 70
-          }
-        },
+            "xPct": 46,
+            "yPct": 84
+          },
+          "maxItemScale": 0.5
+        }
+      ]
+    },
+    {
+      "id": "grass-yard",
+      "background": "scene-tree-yard.png",
+      "locations": [
         {
           "id": "grass",
           "labelEn": "grass",
-          "preposition": "on",
+          "preposition": "in",
+          "anchor": {
+            "xPct": 64,
+            "yPct": 88
+          },
+          "maxItemScale": 0.5
+        }
+      ]
+    },
+    {
+      "id": "classroom",
+      "background": "scene-classroom.png",
+      "locations": [
+        {
+          "id": "desk",
+          "labelEn": "desk",
+          "preposition": "under",
           "anchor": {
             "xPct": 50,
-            "yPct": 70
-          }
-        },
+            "yPct": 88
+          },
+          "maxItemScale": 0.45
+        }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "background": "scene-kitchen.png",
+      "locations": [
         {
-          "id": "shelf",
-          "labelEn": "shelf",
-          "preposition": "on",
+          "id": "kitchen",
+          "labelEn": "kitchen",
+          "preposition": "in",
           "anchor": {
-            "xPct": 14,
-            "yPct": 30
-          }
-        },
+            "xPct": 45,
+            "yPct": 60
+          },
+          "maxItemScale": 0.45
+        }
+      ]
+    },
+    {
+      "id": "living-chair",
+      "background": "scene-living-room.png",
+      "locations": [
         {
           "id": "chair",
           "labelEn": "chair",
           "preposition": "on",
           "anchor": {
-            "xPct": 16,
-            "yPct": 66
-          }
-        },
-        {
-          "id": "sofa",
-          "labelEn": "sofa",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 80,
-            "yPct": 74
+            "xPct": 30,
+            "yPct": 60
           },
-          "maxItemScale": 0.6
-        },
-        {
-          "id": "carpet",
-          "labelEn": "carpet",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 46,
-            "yPct": 90
-          }
+          "maxItemScale": 0.4
         }
       ]
     },
     {
-      "id": "girl-outdoor",
-      "background": "scene-girl-outdoor.png",
+      "id": "bedroom-bed",
+      "background": "scene-bedroom.png",
       "locations": [
         {
-          "id": "station",
-          "labelEn": "station",
-          "preposition": "at",
-          "anchor": {
-            "xPct": 11,
-            "yPct": 66
-          }
-        },
-        {
-          "id": "park",
-          "labelEn": "park",
-          "preposition": "in",
+          "id": "bed",
+          "labelEn": "bed",
+          "preposition": "on",
           "anchor": {
             "xPct": 32,
-            "yPct": 74
-          }
-        },
-        {
-          "id": "garden",
-          "labelEn": "garden",
-          "preposition": "in",
-          "anchor": {
-            "xPct": 58,
-            "yPct": 70
-          }
-        },
-        {
-          "id": "balcony",
-          "labelEn": "balcony",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 88,
-            "yPct": 36
-          }
-        },
-        {
-          "id": "shelf",
-          "labelEn": "shelf",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 88,
-            "yPct": 62
-          }
-        },
-        {
-          "id": "carpet",
-          "labelEn": "carpet",
-          "preposition": "on",
-          "anchor": {
-            "xPct": 80,
-            "yPct": 88
-          }
+            "yPct": 60
+          },
+          "maxItemScale": 0.45
         }
       ]
     }
   ],
   "characters": [
     {
-      "id": "grandma",
-      "nameEn": "Grandma",
-      "portrait": "char-grandma.png",
-      "sceneId": "living-room",
-      "items": [
-        {
-          "id": "glasses",
-          "word": "glasses",
-          "wordZh": "眼镜",
-          "isPlural": true,
-          "sprite": "item-glasses.png"
-        }
-      ],
-      "questionAudio": {
-        "glasses": "grandma-q-glasses.wav"
-      },
-      "thanksAudio": {
-        "1": "grandma-t-1.wav",
-        "2": "grandma-t-2.wav",
-        "3": "grandma-t-3.wav",
-        "4": "grandma-t-4.wav",
-        "5": "grandma-t-5.wav",
-        "6": "grandma-t-6.wav",
-        "7": "grandma-t-7.wav",
-        "8": "grandma-t-8.wav",
-        "9": "grandma-t-9.wav",
-        "10": "grandma-t-10.wav"
-      },
-      "encourageAudio": "grandma-encourage.wav"
-    },
-    {
       "id": "boy",
       "nameEn": "Little Boy",
       "portrait": "char-boy.png",
-      "sceneId": "boy-room",
+      "sceneId": "yard-tree",
       "items": [
         {
           "id": "football",
@@ -253,20 +174,11 @@
           "wordZh": "足球",
           "isPlural": false,
           "sprite": "item-football.png",
-          "scale": 0.7
-        },
-        {
-          "id": "toys",
-          "word": "toys",
-          "wordZh": "玩具",
-          "isPlural": true,
-          "sprite": "item-toys.png",
-          "scale": 1.5
+          "scale": 0.55
         }
       ],
       "questionAudio": {
-        "football": "boy-q-football.wav",
-        "toys": "boy-q-toys.wav"
+        "football": "boy-q-football.wav"
       },
       "thanksAudio": {
         "1": "boy-t-1.wav",
@@ -286,28 +198,19 @@
       "id": "girl",
       "nameEn": "Little Girl",
       "portrait": "char-girl.png",
-      "sceneId": "girl-outdoor",
+      "sceneId": "box-room",
       "items": [
         {
-          "id": "puppy",
-          "word": "puppy",
-          "wordZh": "小狗",
+          "id": "pencil",
+          "word": "pencil",
+          "wordZh": "铅笔",
           "isPlural": false,
-          "sprite": "item-puppy.png",
-          "scale": 0.78
-        },
-        {
-          "id": "kitten",
-          "word": "kitten",
-          "wordZh": "小猫",
-          "isPlural": false,
-          "sprite": "item-kitten.png",
-          "scale": 0.78
+          "sprite": "item-pencil.png",
+          "scale": 0.5
         }
       ],
       "questionAudio": {
-        "puppy": "girl-q-puppy.wav",
-        "kitten": "girl-q-kitten.wav"
+        "pencil": "girl-q-pencil.wav"
       },
       "thanksAudio": {
         "1": "girl-t-1.wav",
@@ -324,89 +227,54 @@
       "encourageAudio": "girl-encourage.wav"
     },
     {
-      "id": "dad",
-      "nameEn": "Dad",
-      "portrait": "char-dad.png",
-      "sceneId": "living-room",
+      "id": "grandpa",
+      "nameEn": "Grandpa",
+      "portrait": "char-grandpa.png",
+      "sceneId": "desk-room",
       "items": [
         {
-          "id": "keys",
-          "word": "keys",
-          "wordZh": "钥匙",
+          "id": "glasses",
+          "word": "glasses",
+          "wordZh": "眼镜",
           "isPlural": true,
-          "sprite": "item-keys.png",
-          "scale": 0.65
-        },
-        {
-          "id": "wallet",
-          "word": "wallet",
-          "wordZh": "钱包",
-          "isPlural": false,
-          "sprite": "item-wallet.png",
-          "scale": 0.7
-        },
-        {
-          "id": "newspaper",
-          "word": "newspaper",
-          "wordZh": "报纸",
-          "isPlural": false,
-          "sprite": "item-newspaper.png"
+          "sprite": "item-glasses.png",
+          "scale": 0.5
         }
       ],
       "questionAudio": {
-        "keys": "dad-q-keys.wav",
-        "wallet": "dad-q-wallet.wav",
-        "newspaper": "dad-q-newspaper.wav"
+        "glasses": "grandpa-q-glasses.wav"
       },
       "thanksAudio": {
-        "1": "dad-t-1.wav",
-        "2": "dad-t-2.wav",
-        "3": "dad-t-3.wav",
-        "4": "dad-t-4.wav",
-        "5": "dad-t-5.wav",
-        "6": "dad-t-6.wav",
-        "7": "dad-t-7.wav",
-        "8": "dad-t-8.wav",
-        "9": "dad-t-9.wav",
-        "10": "dad-t-10.wav"
+        "1": "grandpa-t-1.wav",
+        "2": "grandpa-t-2.wav",
+        "3": "grandpa-t-3.wav",
+        "4": "grandpa-t-4.wav",
+        "5": "grandpa-t-5.wav",
+        "6": "grandpa-t-6.wav",
+        "7": "grandpa-t-7.wav",
+        "8": "grandpa-t-8.wav",
+        "9": "grandpa-t-9.wav",
+        "10": "grandpa-t-10.wav"
       },
-      "encourageAudio": "dad-encourage.wav"
+      "encourageAudio": "grandpa-encourage.wav"
     },
     {
       "id": "mom",
       "nameEn": "Mom",
       "portrait": "char-mom.png",
-      "sceneId": "living-room",
+      "sceneId": "bedroom",
       "items": [
         {
-          "id": "handbag",
-          "word": "handbag",
-          "wordZh": "手提包",
+          "id": "phone",
+          "word": "phone",
+          "wordZh": "手机",
           "isPlural": false,
-          "sprite": "item-handbag.png",
-          "scale": 0.75
-        },
-        {
-          "id": "necklace",
-          "word": "necklace",
-          "wordZh": "项链",
-          "isPlural": false,
-          "sprite": "item-necklace.png",
-          "scale": 0.6
-        },
-        {
-          "id": "ring",
-          "word": "ring",
-          "wordZh": "戒指",
-          "isPlural": false,
-          "sprite": "item-ring.png",
-          "scale": 0.6
+          "sprite": "item-phone.png",
+          "scale": 0.42
         }
       ],
       "questionAudio": {
-        "handbag": "mom-q-handbag.wav",
-        "necklace": "mom-q-necklace.wav",
-        "ring": "mom-q-ring.wav"
+        "phone": "mom-q-phone.wav"
       },
       "thanksAudio": {
         "1": "mom-t-1.wav",
@@ -421,6 +289,198 @@
         "10": "mom-t-10.wav"
       },
       "encourageAudio": "mom-encourage.wav"
+    },
+    {
+      "id": "brother",
+      "nameEn": "Little Brother",
+      "portrait": "char-boy.png",
+      "sceneId": "living-sofa",
+      "items": [
+        {
+          "id": "blocks",
+          "word": "blocks",
+          "wordZh": "积木",
+          "isPlural": true,
+          "sprite": "item-blocks.png",
+          "scale": 0.5
+        }
+      ],
+      "questionAudio": {
+        "blocks": "brother-q-blocks.wav"
+      },
+      "thanksAudio": {
+        "1": "brother-t-1.wav",
+        "2": "brother-t-2.wav",
+        "3": "brother-t-3.wav",
+        "4": "brother-t-4.wav",
+        "5": "brother-t-5.wav",
+        "6": "brother-t-6.wav",
+        "7": "brother-t-7.wav",
+        "8": "brother-t-8.wav",
+        "9": "brother-t-9.wav",
+        "10": "brother-t-10.wav"
+      },
+      "encourageAudio": "brother-encourage.wav"
+    },
+    {
+      "id": "sister",
+      "nameEn": "Big Sister",
+      "portrait": "char-girl.png",
+      "sceneId": "grass-yard",
+      "items": [
+        {
+          "id": "rabbit",
+          "word": "rabbit",
+          "wordZh": "兔子",
+          "isPlural": false,
+          "sprite": "item-rabbit.png",
+          "scale": 0.55
+        }
+      ],
+      "questionAudio": {
+        "rabbit": "sister-q-rabbit.wav"
+      },
+      "thanksAudio": {
+        "1": "sister-t-1.wav",
+        "2": "sister-t-2.wav",
+        "3": "sister-t-3.wav",
+        "4": "sister-t-4.wav",
+        "5": "sister-t-5.wav",
+        "6": "sister-t-6.wav",
+        "7": "sister-t-7.wav",
+        "8": "sister-t-8.wav",
+        "9": "sister-t-9.wav",
+        "10": "sister-t-10.wav"
+      },
+      "encourageAudio": "sister-encourage.wav"
+    },
+    {
+      "id": "teacher",
+      "nameEn": "Teacher",
+      "portrait": "char-teacher.png",
+      "sceneId": "classroom",
+      "items": [
+        {
+          "id": "ruler",
+          "word": "ruler",
+          "wordZh": "尺子",
+          "isPlural": false,
+          "sprite": "item-ruler.png",
+          "scale": 0.5
+        }
+      ],
+      "questionAudio": {
+        "ruler": "teacher-q-ruler.wav"
+      },
+      "thanksAudio": {
+        "1": "teacher-t-1.wav",
+        "2": "teacher-t-2.wav",
+        "3": "teacher-t-3.wav",
+        "4": "teacher-t-4.wav",
+        "5": "teacher-t-5.wav",
+        "6": "teacher-t-6.wav",
+        "7": "teacher-t-7.wav",
+        "8": "teacher-t-8.wav",
+        "9": "teacher-t-9.wav",
+        "10": "teacher-t-10.wav"
+      },
+      "encourageAudio": "teacher-encourage.wav"
+    },
+    {
+      "id": "sister2",
+      "nameEn": "Big Sister",
+      "portrait": "char-girl.png",
+      "sceneId": "kitchen",
+      "items": [
+        {
+          "id": "cake",
+          "word": "cake",
+          "wordZh": "蛋糕",
+          "isPlural": false,
+          "sprite": "item-cake.png",
+          "scale": 0.5
+        }
+      ],
+      "questionAudio": {
+        "cake": "sister2-q-cake.wav"
+      },
+      "thanksAudio": {
+        "1": "sister2-t-1.wav",
+        "2": "sister2-t-2.wav",
+        "3": "sister2-t-3.wav",
+        "4": "sister2-t-4.wav",
+        "5": "sister2-t-5.wav",
+        "6": "sister2-t-6.wav",
+        "7": "sister2-t-7.wav",
+        "8": "sister2-t-8.wav",
+        "9": "sister2-t-9.wav",
+        "10": "sister2-t-10.wav"
+      },
+      "encourageAudio": "sister2-encourage.wav"
+    },
+    {
+      "id": "brother2",
+      "nameEn": "Big Brother",
+      "portrait": "char-boy.png",
+      "sceneId": "living-chair",
+      "items": [
+        {
+          "id": "keys",
+          "word": "keys",
+          "wordZh": "钥匙",
+          "isPlural": true,
+          "sprite": "item-keys.png",
+          "scale": 0.45
+        }
+      ],
+      "questionAudio": {
+        "keys": "brother2-q-keys.wav"
+      },
+      "thanksAudio": {
+        "1": "brother2-t-1.wav",
+        "2": "brother2-t-2.wav",
+        "3": "brother2-t-3.wav",
+        "4": "brother2-t-4.wav",
+        "5": "brother2-t-5.wav",
+        "6": "brother2-t-6.wav",
+        "7": "brother2-t-7.wav",
+        "8": "brother2-t-8.wav",
+        "9": "brother2-t-9.wav",
+        "10": "brother2-t-10.wav"
+      },
+      "encourageAudio": "brother2-encourage.wav"
+    },
+    {
+      "id": "dad",
+      "nameEn": "Dad",
+      "portrait": "char-dad.png",
+      "sceneId": "bedroom-bed",
+      "items": [
+        {
+          "id": "book",
+          "word": "book",
+          "wordZh": "书",
+          "isPlural": false,
+          "sprite": "item-book.png",
+          "scale": 0.5
+        }
+      ],
+      "questionAudio": {
+        "book": "dad-q-book.wav"
+      },
+      "thanksAudio": {
+        "1": "dad-t-1.wav",
+        "2": "dad-t-2.wav",
+        "3": "dad-t-3.wav",
+        "4": "dad-t-4.wav",
+        "5": "dad-t-5.wav",
+        "6": "dad-t-6.wav",
+        "7": "dad-t-7.wav",
+        "8": "dad-t-8.wav",
+        "9": "dad-t-9.wav",
+        "10": "dad-t-10.wav"
+      },
+      "encourageAudio": "dad-encourage.wav"
     }
   ]
 }
