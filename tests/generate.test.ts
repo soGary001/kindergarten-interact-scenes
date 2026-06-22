@@ -15,8 +15,8 @@ describe("buildManifest", () => {
     const lines = enumerateAudioLines(CONTENT_CONFIG);
     const audioByLine = new Map(lines.map((l) => [`${l.characterId}:${l.kind}:${l.key}`, l.filename]));
     const manifest = buildManifest(CONTENT_CONFIG, audioByLine);
-    const grandma = manifest.characters.find((c) => c.id === "grandma")!;
-    expect(grandma.questionAudio.glasses).toBe("grandma-q-glasses.wav");
-    expect(grandma.thanksAudio["7"]).toBe("grandma-t-7.wav");
+    const grandpa = manifest.characters.find((c) => c.id === "grandpa")!;
+    expect(grandpa.questionAudio.glasses).toBe("grandpa-q-glasses.wav");
+    expect(grandpa.thanksAudio["7"]).toBe("grandpa-t-7.wav");
   });
 });

@@ -50,11 +50,16 @@ async function main(): Promise<void> {
   // voicedesign description strings (confirmed mechanism): each becomes the user message
   // that designs the character's voice. Tune wording to taste.
   const voiceByCharacter: Record<string, string> = {
-    grandma: "A warm, gentle, kind elderly grandmother. Slow, soft, caring tone.",
     boy: "An energetic, cheerful young boy. Bright, playful, lively tone.",
     girl: "A sweet, curious little girl. Light, gentle, happy tone.",
-    dad: "A calm, friendly adult man. Warm, steady, reassuring tone.",
+    grandpa: "A warm, kind elderly grandfather. Slow, soft, gentle tone.",
     mom: "A kind, gentle adult woman. Soft, warm, caring tone.",
+    brother: "A cheerful little boy, slightly younger. Bright, playful tone.",
+    sister: "A happy young girl. Light, sweet, lively tone.",
+    teacher: "A friendly kindergarten teacher. Clear, warm, encouraging adult tone.",
+    sister2: "A sweet, cheerful girl. Gentle, happy tone.",
+    brother2: "A friendly older boy. Confident, warm, lively tone.",
+    dad: "A calm, friendly adult man. Warm, steady, reassuring tone.",
   };
 
   const lines = enumerateAudioLines(CONTENT_CONFIG);

@@ -25,6 +25,12 @@ const SYNONYMS: Record<string, string[]> = {
   park: ["park"],
   garden: ["garden", "flowers", "flower"],
   balcony: ["balcony"],
+  // competition-2 locations
+  tree: ["tree"],
+  box: ["box", "case"],
+  desk: ["desk", "table"],
+  kitchen: ["kitchen"],
+  bed: ["bed"],
 };
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");

@@ -22,30 +22,37 @@ const STYLE =
 const SCENE = "1664*928";
 const SQUARE = "1328*1328";
 
+// COMPETITION-2 assets. Reused files (already present in public/assets/img) are listed so
+// the script documents the full set; gen() skips any PNG that already exists. New ones
+// (backgrounds, items, the grandpa/teacher portraits) are generated.
 // transparent: cut the white background to alpha after download
 const ASSETS = [
   // scenes (opaque, 16:9)
-  { f: "scene-living-room", size: SCENE, transparent: false, p: "A cozy tidy living room interior, wide view, clearly showing and spacing apart: a low table, a TV cabinet with a TV, a single armchair, a sofa with a pillow on it, a window with a windowsill, a desk lamp, a patterned floor rug, a tall wardrobe, and a bookshelf. Warm inviting daytime, empty surfaces." },
-  { f: "scene-boy-room", size: SCENE, transparent: false, p: "A bright child's playroom on the left with an open door in the middle leading out to a sunny grassy garden on the right. Clearly show the open door, green grass outside, a wall shelf, a small chair, a sofa, a window with windowsill, and a floor carpet. Cheerful and airy." },
-  { f: "scene-girl-outdoor", size: SCENE, transparent: false, p: "A cute stylized outdoor panorama, clearly showing and spacing apart: a small train station with a sign post, a park with trees and a bench, a flower garden, a house balcony, a wall shelf, and a picnic blanket on the ground. Sunny friendly storybook." },
+  { f: "scene-living-room", size: SCENE, transparent: false, p: "A cozy tidy living room interior, wide view, clearly showing and spacing apart: a low table, a TV cabinet with a TV, a single armchair, a sofa with a pillow on it, a desk lamp, a patterned floor rug, a tall wardrobe, and a bookshelf. Warm inviting daytime, empty surfaces." }, // reuse
+  { f: "scene-tree-yard", size: SCENE, transparent: false, p: "A sunny backyard with one big leafy round tree on the left casting shade on green grass, a low wooden fence behind, blue sky with a few fluffy clouds, open grassy foreground. Cheerful storybook, empty ground." }, // NEW (#1 tree, #6 grass)
+  { f: "scene-box-room", size: SCENE, transparent: false, p: "A bright tidy child's room, wide view, with a single open cardboard toy box sitting on the floor in the middle, plain rug, a small shelf on the wall. Cheerful and airy, empty surfaces." }, // NEW (#2 box)
+  { f: "scene-desk-room", size: SCENE, transparent: false, p: "A cozy home study, wide view, with one clear wooden desk and a chair in the middle, a small lamp, a window and a rug. Warm inviting daytime, empty desk surface." }, // NEW (#3 desk)
+  { f: "scene-classroom", size: SCENE, transparent: false, p: "A cute kindergarten classroom, wide view, with a low wooden pupil desk and small chair in the middle, a green chalkboard on the wall, colorful posters, bright and friendly. Empty desk surface." }, // NEW (#7 under the desk)
+  { f: "scene-bedroom", size: SCENE, transparent: false, p: "A cozy child's bedroom, wide view, with one neatly made bed with a single pillow on the left, a small nightstand, a window with curtains, a soft rug. Warm and calm daytime." }, // NEW (#4 pillow, #10 bed)
+  { f: "scene-kitchen", size: SCENE, transparent: false, p: "A bright cheerful kitchen, wide view, with counters, wooden cupboards, a fridge, a small window, and a clear countertop in the middle. Clean and friendly storybook, empty surfaces." }, // NEW (#8 kitchen)
   // characters (transparent, square, full body)
-  { f: "char-grandma", size: SQUARE, transparent: true, p: "A warm kind elderly grandmother with round glasses, grey hair in a bun, cozy cardigan, gentle smile, waving hello, full body, centered with margin, on a pure solid white background." },
-  { f: "char-boy", size: SQUARE, transparent: true, p: "An energetic cheerful little boy, short hair, bright t-shirt and shorts, big happy smile, waving, full body, centered with margin, on a pure solid white background." },
-  { f: "char-girl", size: SQUARE, transparent: true, p: "A sweet curious little girl, cute dress, hair with a bow, happy smile, waving, full body, centered with margin, on a pure solid white background." },
-  { f: "char-dad", size: SQUARE, transparent: true, p: "A calm friendly young father, short neat hair, casual shirt, warm smile, waving, full body, centered with margin, on a pure solid white background." },
-  { f: "char-mom", size: SQUARE, transparent: true, p: "A kind gentle mother, shoulder-length hair, casual blouse, soft smile, waving, full body, centered with margin, on a pure solid white background." },
+  { f: "char-boy", size: SQUARE, transparent: true, p: "An energetic cheerful little boy, short hair, bright t-shirt and shorts, big happy smile, waving, full body, centered with margin, on a pure solid white background." }, // reuse
+  { f: "char-girl", size: SQUARE, transparent: true, p: "A sweet curious little girl, cute dress, hair with a bow, happy smile, waving, full body, centered with margin, on a pure solid white background." }, // reuse
+  { f: "char-dad", size: SQUARE, transparent: true, p: "A calm friendly young father, short neat hair, casual shirt, warm smile, waving, full body, centered with margin, on a pure solid white background." }, // reuse
+  { f: "char-mom", size: SQUARE, transparent: true, p: "A kind gentle mother, shoulder-length hair, casual blouse, soft smile, waving, full body, centered with margin, on a pure solid white background." }, // reuse
+  { f: "char-grandpa", size: SQUARE, transparent: true, p: "A warm kind elderly grandfather with round glasses, short grey hair, a small grey moustache, cozy cardigan and trousers, gentle smile, waving hello, full body, centered with margin, on a pure solid white background." }, // NEW
+  { f: "char-teacher", size: SQUARE, transparent: true, p: "A friendly young kindergarten teacher, neat hair, smart casual blouse and skirt, warm encouraging smile, waving hello, full body, centered with margin, on a pure solid white background." }, // NEW
   // items (transparent, square, single centered object with margin)
-  { f: "item-glasses", size: SQUARE, transparent: true, p: "A single pair of round reading glasses, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-football", size: SQUARE, transparent: true, p: "A single classic black and white soccer ball, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-toys", size: SQUARE, transparent: true, p: "A small cute teddy bear next to a couple of toy building blocks, centered with wide margin, on a pure solid white background." },
-  { f: "item-puppy", size: SQUARE, transparent: true, p: "A single adorable cartoon puppy sitting, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-kitten", size: SQUARE, transparent: true, p: "A single adorable cartoon kitten sitting, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-keys", size: SQUARE, transparent: true, p: "A small bunch of house keys on a key ring, centered with wide margin, on a pure solid white background." },
-  { f: "item-wallet", size: SQUARE, transparent: true, p: "A single closed brown wallet, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-newspaper", size: SQUARE, transparent: true, p: "A single folded newspaper with no readable text, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-handbag", size: SQUARE, transparent: true, p: "A single stylish lady's handbag, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-necklace", size: SQUARE, transparent: true, p: "A single pretty pearl bead necklace, one object centered with wide margin, on a pure solid white background." },
-  { f: "item-ring", size: SQUARE, transparent: true, p: "A single sparkly diamond ring, one object centered with wide margin, on a pure solid white background." },
+  { f: "item-football", size: SQUARE, transparent: true, p: "A single classic black and white soccer ball, one object centered with wide margin, on a pure solid white background." }, // reuse
+  { f: "item-glasses", size: SQUARE, transparent: true, p: "A single pair of round reading glasses, one object centered with wide margin, on a pure solid white background." }, // reuse
+  { f: "item-keys", size: SQUARE, transparent: true, p: "A small bunch of house keys on a key ring, centered with wide margin, on a pure solid white background." }, // reuse
+  { f: "item-pencil", size: SQUARE, transparent: true, p: "A single yellow pencil with a sharp tip and pink eraser, one object centered with wide margin, on a pure solid white background." }, // NEW
+  { f: "item-phone", size: SQUARE, transparent: true, p: "A single modern smartphone with a blank colorful screen, one object centered with wide margin, on a pure solid white background." }, // NEW
+  { f: "item-blocks", size: SQUARE, transparent: true, p: "A small neat stack of a few colorful toy building blocks, centered with wide margin, on a pure solid white background." }, // NEW
+  { f: "item-rabbit", size: SQUARE, transparent: true, p: "A single adorable fluffy white cartoon rabbit sitting, one object centered with wide margin, on a pure solid white background." }, // NEW
+  { f: "item-ruler", size: SQUARE, transparent: true, p: "A single straight wooden ruler with simple tick marks and no readable numbers, one object centered with wide margin, on a pure solid white background." }, // NEW
+  { f: "item-cake", size: SQUARE, transparent: true, p: "A single cute slice of birthday cake with a cherry on top, one object centered with wide margin, on a pure solid white background." }, // NEW
+  { f: "item-book", size: SQUARE, transparent: true, p: "A single closed hardcover storybook with a plain colorful cover and no readable text, one object centered with wide margin, on a pure solid white background." }, // NEW
 ];
 
 async function callApi(a) {

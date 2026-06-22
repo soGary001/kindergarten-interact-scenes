@@ -4,75 +4,72 @@ export interface ConfigScene { id: string; background: string; locations: Config
 export interface ConfigCharacter { id: string; nameEn: string; persona: string; portrait: string; sceneId: string; items: ConfigItem[]; }
 export interface ContentConfig { scenes: ConfigScene[]; characters: ConfigCharacter[]; }
 
-const livingRoom: ConfigScene = {
-  id: "living-room",
-  background: "scene-living-room.png",
-  locations: [
-    { id: "table",      labelEn: "table",      preposition: "on",    anchor: { xPct: 38, yPct: 73 } },
-    { id: "tv-cabinet", labelEn: "TV cabinet", preposition: "on",    anchor: { xPct: 11, yPct: 64 } },
-    { id: "chair",      labelEn: "chair",      preposition: "on",    anchor: { xPct: 27, yPct: 62 } },
-    { id: "sofa",       labelEn: "sofa",       preposition: "on",    anchor: { xPct: 66, yPct: 62 } },
-    { id: "desk-lamp",  labelEn: "lamp",       preposition: "by",    anchor: { xPct: 58, yPct: 58 } },
-    { id: "carpet",     labelEn: "carpet",     preposition: "on",    anchor: { xPct: 41, yPct: 85 } },
-    { id: "wardrobe",   labelEn: "wardrobe",   preposition: "in",    anchor: { xPct: 82, yPct: 60 } },
-    { id: "bookshelf",  labelEn: "bookshelf",  preposition: "on",    anchor: { xPct: 90, yPct: 62 } },
-    { id: "pillow",     labelEn: "pillow",     preposition: "under", anchor: { xPct: 54, yPct: 62 } },
-  ],
-};
+// ── COMPETITION-2 content ────────────────────────────────────────────────────
+// Ten FIXED scenes (unlike the original random model): each scene pairs exactly one
+// character with one item and one correct location. The child must say the full
+// sentence (e.g. "It's under the tree."). Each scene therefore has a single location;
+// a character maps to a single scene. Backgrounds are reused where the room fits.
+//
+// NOTE: anchors below are reasonable first guesses — tune them against the generated art
+// with the dev overlay before the contest. Item sprites/backgrounds/portraits marked NEW
+// are produced by `node build-assets/gen-art.mjs`; audio by `npm run generate`.
 
-const boyScene: ConfigScene = {
-  id: "boy-room",
-  background: "scene-boy-room.png",
-  locations: [
-    { id: "door",       labelEn: "door",       preposition: "by", anchor: { xPct: 29, yPct: 70 } },
-    { id: "grass",      labelEn: "grass",      preposition: "on", anchor: { xPct: 50, yPct: 70 } },
-    { id: "shelf",      labelEn: "shelf",      preposition: "on", anchor: { xPct: 14, yPct: 30 } },
-    { id: "chair",      labelEn: "chair",      preposition: "on", anchor: { xPct: 16, yPct: 66 } },
-    { id: "sofa",       labelEn: "sofa",       preposition: "on", anchor: { xPct: 80, yPct: 74 }, maxItemScale: 0.6 },
-    { id: "carpet",     labelEn: "carpet",     preposition: "on", anchor: { xPct: 46, yPct: 90 } },
-  ],
-};
-
-const girlScene: ConfigScene = {
-  id: "girl-outdoor",
-  background: "scene-girl-outdoor.png",
-  locations: [
-    { id: "station", labelEn: "station", preposition: "at", anchor: { xPct: 11, yPct: 66 } },
-    { id: "park",    labelEn: "park",    preposition: "in", anchor: { xPct: 32, yPct: 74 } },
-    { id: "garden",  labelEn: "garden",  preposition: "in", anchor: { xPct: 58, yPct: 70 } },
-    { id: "balcony", labelEn: "balcony", preposition: "on", anchor: { xPct: 88, yPct: 36 } },
-    { id: "shelf",   labelEn: "shelf",   preposition: "on", anchor: { xPct: 88, yPct: 62 } },
-    { id: "carpet",  labelEn: "carpet",  preposition: "on", anchor: { xPct: 80, yPct: 88 } },
-  ],
-};
+const scenes: ConfigScene[] = [
+  // 1. boy — football — under the tree
+  { id: "yard-tree",   background: "scene-tree-yard.png",  // NEW (also used by #6)
+    locations: [{ id: "tree",  labelEn: "tree",  preposition: "under",  anchor: { xPct: 40, yPct: 72 }, maxItemScale: 0.55 }] },
+  // 2. girl — pencil — in the box
+  { id: "box-room",    background: "scene-box-room.png",   // NEW
+    locations: [{ id: "box",   labelEn: "box",   preposition: "in",     anchor: { xPct: 45, yPct: 70 }, maxItemScale: 0.5 }] },
+  // 3. grandpa — glasses — on the desk
+  { id: "desk-room",   background: "scene-desk-room.png",  // NEW
+    locations: [{ id: "desk",  labelEn: "desk",  preposition: "on",     anchor: { xPct: 45, yPct: 58 }, maxItemScale: 0.5 }] },
+  // 4. mom — phone — under the pillow
+  { id: "bedroom",     background: "scene-bedroom.png",    // NEW (also used by #10)
+    locations: [{ id: "pillow", labelEn: "pillow", preposition: "under", anchor: { xPct: 38, yPct: 60 }, maxItemScale: 0.45 }] },
+  // 5. brother — blocks — beside the sofa
+  { id: "living-sofa", background: "scene-living-room.png", // reuse
+    locations: [{ id: "sofa",  labelEn: "sofa",  preposition: "beside", anchor: { xPct: 50, yPct: 78 }, maxItemScale: 0.5 }] },
+  // 6. sister — rabbit — in the grass
+  { id: "grass-yard",  background: "scene-tree-yard.png",  // reuse (NEW)
+    locations: [{ id: "grass", labelEn: "grass", preposition: "in",     anchor: { xPct: 60, yPct: 82 }, maxItemScale: 0.55 }] },
+  // 7. teacher — ruler — under the desk
+  { id: "classroom",   background: "scene-classroom.png",  // NEW
+    locations: [{ id: "desk",  labelEn: "desk",  preposition: "under",  anchor: { xPct: 45, yPct: 74 }, maxItemScale: 0.5 }] },
+  // 8. sister2 — cake — in the kitchen
+  { id: "kitchen",     background: "scene-kitchen.png",    // NEW
+    locations: [{ id: "kitchen", labelEn: "kitchen", preposition: "in", anchor: { xPct: 50, yPct: 64 }, maxItemScale: 0.5 }] },
+  // 9. brother2 — keys — on the chair
+  { id: "living-chair", background: "scene-living-room.png", // reuse
+    locations: [{ id: "chair", labelEn: "chair", preposition: "on",     anchor: { xPct: 27, yPct: 62 }, maxItemScale: 0.45 }] },
+  // 10. dad — book — on the bed
+  { id: "bedroom-bed", background: "scene-bedroom.png",    // reuse (NEW)
+    locations: [{ id: "bed",   labelEn: "bed",   preposition: "on",     anchor: { xPct: 55, yPct: 66 }, maxItemScale: 0.5 }] },
+];
 
 export const CONTENT_CONFIG: ContentConfig = {
-  scenes: [livingRoom, boyScene, girlScene],
+  scenes,
   characters: [
-    { id: "grandma", nameEn: "Grandma", persona: "a warm, gentle grandmother", portrait: "char-grandma.png", sceneId: "living-room",
-      items: [{ id: "glasses", word: "glasses", wordZh: "眼镜", isPlural: true, sprite: "item-glasses.png" }] },
-    { id: "boy", nameEn: "Little Boy", persona: "an energetic, cheerful little boy", portrait: "char-boy.png", sceneId: "boy-room",
-      items: [
-        { id: "football", word: "football", wordZh: "足球", isPlural: false, sprite: "item-football.png", scale: 0.7 },
-        { id: "toys", word: "toys", wordZh: "玩具", isPlural: true, sprite: "item-toys.png", scale: 1.5 },
-      ] },
-    { id: "girl", nameEn: "Little Girl", persona: "a sweet, curious little girl", portrait: "char-girl.png", sceneId: "girl-outdoor",
-      items: [
-        { id: "puppy", word: "puppy", wordZh: "小狗", isPlural: false, sprite: "item-puppy.png", scale: 0.78 },
-        { id: "kitten", word: "kitten", wordZh: "小猫", isPlural: false, sprite: "item-kitten.png", scale: 0.78 },
-      ] },
-    { id: "dad", nameEn: "Dad", persona: "a calm, friendly father", portrait: "char-dad.png", sceneId: "living-room",
-      items: [
-        { id: "keys", word: "keys", wordZh: "钥匙", isPlural: true, sprite: "item-keys.png", scale: 0.65 },
-        { id: "wallet", word: "wallet", wordZh: "钱包", isPlural: false, sprite: "item-wallet.png", scale: 0.7 },
-        { id: "newspaper", word: "newspaper", wordZh: "报纸", isPlural: false, sprite: "item-newspaper.png" },
-      ] },
-    { id: "mom", nameEn: "Mom", persona: "a kind, gentle mother", portrait: "char-mom.png", sceneId: "living-room",
-      items: [
-        { id: "handbag", word: "handbag", wordZh: "手提包", isPlural: false, sprite: "item-handbag.png", scale: 0.75 },
-        { id: "necklace", word: "necklace", wordZh: "项链", isPlural: false, sprite: "item-necklace.png", scale: 0.6 },
-        { id: "ring", word: "ring", wordZh: "戒指", isPlural: false, sprite: "item-ring.png", scale: 0.6 },
-      ] },
+    { id: "boy", nameEn: "Little Boy", persona: "an energetic, cheerful little boy", portrait: "char-boy.png", sceneId: "yard-tree",
+      items: [{ id: "football", word: "football", wordZh: "足球", isPlural: false, sprite: "item-football.png", scale: 0.55 }] },
+    { id: "girl", nameEn: "Little Girl", persona: "a sweet, curious little girl", portrait: "char-girl.png", sceneId: "box-room",
+      items: [{ id: "pencil", word: "pencil", wordZh: "铅笔", isPlural: false, sprite: "item-pencil.png", scale: 0.5 }] },
+    { id: "grandpa", nameEn: "Grandpa", persona: "a warm, kind elderly grandfather", portrait: "char-grandpa.png", sceneId: "desk-room",
+      items: [{ id: "glasses", word: "glasses", wordZh: "眼镜", isPlural: true, sprite: "item-glasses.png", scale: 0.5 }] },
+    { id: "mom", nameEn: "Mom", persona: "a kind, gentle mother", portrait: "char-mom.png", sceneId: "bedroom",
+      items: [{ id: "phone", word: "phone", wordZh: "手机", isPlural: false, sprite: "item-phone.png", scale: 0.42 }] },
+    { id: "brother", nameEn: "Little Brother", persona: "a cheerful little boy", portrait: "char-boy.png", sceneId: "living-sofa",
+      items: [{ id: "blocks", word: "blocks", wordZh: "积木", isPlural: true, sprite: "item-blocks.png", scale: 0.5 }] },
+    { id: "sister", nameEn: "Big Sister", persona: "a happy, kind young girl", portrait: "char-girl.png", sceneId: "grass-yard",
+      items: [{ id: "rabbit", word: "rabbit", wordZh: "兔子", isPlural: false, sprite: "item-rabbit.png", scale: 0.55 }] },
+    { id: "teacher", nameEn: "Teacher", persona: "a friendly, kind kindergarten teacher", portrait: "char-teacher.png", sceneId: "classroom",
+      items: [{ id: "ruler", word: "ruler", wordZh: "尺子", isPlural: false, sprite: "item-ruler.png", scale: 0.5 }] },
+    { id: "sister2", nameEn: "Big Sister", persona: "a sweet, cheerful girl", portrait: "char-girl.png", sceneId: "kitchen",
+      items: [{ id: "cake", word: "cake", wordZh: "蛋糕", isPlural: false, sprite: "item-cake.png", scale: 0.5 }] },
+    { id: "brother2", nameEn: "Big Brother", persona: "a friendly older boy", portrait: "char-boy.png", sceneId: "living-chair",
+      items: [{ id: "keys", word: "keys", wordZh: "钥匙", isPlural: true, sprite: "item-keys.png", scale: 0.45 }] },
+    { id: "dad", nameEn: "Dad", persona: "a calm, friendly father", portrait: "char-dad.png", sceneId: "bedroom-bed",
+      items: [{ id: "book", word: "book", wordZh: "书", isPlural: false, sprite: "item-book.png", scale: 0.5 }] },
   ],
 };
 
