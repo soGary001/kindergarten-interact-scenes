@@ -54,7 +54,7 @@ async function main(): Promise<void> {
     girl: "A sweet, curious little girl. Light, gentle, happy tone.",
     grandpa: "A warm, kind elderly grandfather. Slow, soft, gentle tone.",
     mom: "A kind, gentle adult woman. Soft, warm, caring tone.",
-    brother: "A cheerful little boy, slightly younger. Bright, playful tone.",
+    brother: "A clear, cheerful young boy. Speaks slowly and very clearly, crisp and easy to understand, friendly and bright.",
     sister: "A happy young girl. Light, sweet, lively tone.",
     teacher: "A friendly kindergarten teacher. Clear, warm, encouraging adult tone.",
     sister2: "A sweet, cheerful girl. Gentle, happy tone.",
