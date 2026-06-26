@@ -18,8 +18,8 @@ function round(locationId: string, labelEn: string): Round {
   };
 }
 
-describe("isAnswerCorrect (requires a complete sentence)", () => {
-  it("passes a full sentence: subject + be-verb + preposition + location", () => {
+describe("isAnswerCorrect (complete sentence + exact word, no synonyms)", () => {
+  it("passes a full sentence: subject + be-verb + preposition + exact word", () => {
     expect(isAnswerCorrect("It's on the sofa.", round("sofa", "sofa"))).toBe(true);
     expect(isAnswerCorrect("They are on the table.", round("table", "table"))).toBe(true);
     expect(isAnswerCorrect("It is under the pillow.", round("pillow", "pillow"))).toBe(true);
@@ -42,13 +42,14 @@ describe("isAnswerCorrect (requires a complete sentence)", () => {
   it("rejects a sentence with no preposition (e.g. \"it's the sofa\")", () => {
     expect(isAnswerCorrect("it's the sofa", round("sofa", "sofa"))).toBe(false);
   });
-  it("accepts kid synonyms inside a full sentence (couch=sofa, rug=carpet, closet=wardrobe)", () => {
-    expect(isAnswerCorrect("it's on the couch", round("sofa", "sofa"))).toBe(true);
-    expect(isAnswerCorrect("it is on the rug", round("carpet", "carpet"))).toBe(true);
-    expect(isAnswerCorrect("they are in the closet", round("wardrobe", "wardrobe"))).toBe(true);
+  it("rejects synonyms — only the taught word counts (couch≠sofa, rug≠carpet, closet≠wardrobe)", () => {
+    expect(isAnswerCorrect("it's on the couch", round("sofa", "sofa"))).toBe(false);
+    expect(isAnswerCorrect("it is on the rug", round("carpet", "carpet"))).toBe(false);
+    expect(isAnswerCorrect("they are in the closet", round("wardrobe", "wardrobe"))).toBe(false);
   });
-  it("accepts the last word of a multi-word label", () => {
-    expect(isAnswerCorrect("it's on the cabinet", round("tv-cabinet", "TV cabinet"))).toBe(true);
+  it("requires the full multi-word label (a partial word fails)", () => {
+    expect(isAnswerCorrect("it's on the cabinet", round("tv-cabinet", "TV cabinet"))).toBe(false);
+    expect(isAnswerCorrect("it's on the TV cabinet", round("tv-cabinet", "TV cabinet"))).toBe(true);
   });
   it("rejects a full sentence naming the wrong location", () => {
     expect(isAnswerCorrect("It's on the sofa.", round("table", "table"))).toBe(false);

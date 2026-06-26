@@ -1,31 +1,12 @@
 import type { Round } from "./types";
 
-// Judging requires a COMPLETE SENTENCE, not just the location word. To pass, the child's
-// answer must contain all three of:
-//   1. the correct LOCATION word (synonyms allowed, spacing tolerated),
-//   2. a be-verb — covers "it's / they're / it is / they are / is / are ...", and
-//   3. a preposition (on/in/under/by/at/near...). Any preposition passes — we don't grade
-//      which direction word they pick, only that they actually spoke a full sentence.
-// So "It's on the sofa." / "They are on the table." pass; bare "sofa" or "on the sofa" do not.
-const SYNONYMS: Record<string, string[]> = {
-  table: ["table", "desk"],
-  "tv-cabinet": ["tv cabinet", "tv", "television", "cabinet"],
-  chair: ["chair"],
-  sofa: ["sofa", "couch"],
-  windowsill: ["windowsill", "window sill", "window", "sill"],
-  "desk-lamp": ["lamp", "light", "desk lamp"],
-  carpet: ["carpet", "rug", "mat"],
-  wardrobe: ["wardrobe", "closet", "cupboard"],
-  bookshelf: ["bookshelf", "book shelf", "shelf", "bookcase", "books"],
-  pillow: ["pillow", "cushion"],
-  door: ["door", "doorway"],
-  grass: ["grass", "lawn"],
-  shelf: ["shelf", "shelves"],
-  station: ["station"],
-  park: ["park"],
-  garden: ["garden", "flowers", "flower"],
-  balcony: ["balcony"],
-};
+// Strict judging: the child must say a COMPLETE SENTENCE that contains the EXACT location
+// word taught for that scene — NO synonyms (e.g. "couch" does NOT count for "sofa"). To pass:
+//   1. the answer contains the location's own word (round.location.labelEn, spacing-tolerant),
+//   2. a be-verb — "it's / they're / it is / they are / is / are ...", and
+//   3. a preposition (on/in/under/by/at/near...). Any preposition is fine — we don't grade
+//      which direction word they pick, only that they spoke a full sentence with the right word.
+// So "It's on the sofa." passes; "It's on the couch." / bare "sofa" / "on the sofa" all fail.
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -56,15 +37,10 @@ export function isAnswerCorrect(transcript: string, round: Round): boolean {
   const t = norm(transcript);
   if (!t) return false;
 
-  // 1. Correct location word (synonyms when known; otherwise the label + its last word).
-  const label = round.location.labelEn.trim();
-  const last = label.split(/\s+/).pop() ?? "";
-  const keywords = SYNONYMS[round.location.id] ?? [label, last];
-  const hasLocation = keywords.some((w) => {
-    const n = norm(w);
-    return n.length >= 2 && t.includes(n);
-  });
-  if (!hasLocation) return false;
+  // 1. The EXACT location word for this scene — no synonyms. Spacing is tolerated so the
+  //    spoken "TV cabinet" matches the label "TV cabinet" (both normalize to "tvcabinet").
+  const label = norm(round.location.labelEn);
+  if (label.length < 2 || !t.includes(label)) return false;
 
   // 2 + 3. It must be a full sentence: a be-verb AND a preposition.
   const toks = tokenize(transcript);
