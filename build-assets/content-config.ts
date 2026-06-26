@@ -54,7 +54,7 @@ export const CONTENT_CONFIG: ContentConfig = {
     { id: "boy", nameEn: "Little Boy", persona: "an energetic, cheerful little boy", portrait: "char-boy.png", sceneId: "boy-room",
       items: [
         { id: "football", word: "football", wordZh: "足球", isPlural: false, sprite: "item-football.png", scale: 0.7 },
-        { id: "toys", word: "toys", wordZh: "玩具", isPlural: true, sprite: "item-toys.png", scale: 1.5 },
+        { id: "toys", word: "toys", wordZh: "玩具", isPlural: true, sprite: "item-toys.png", scale: 0.6 },
       ] },
     { id: "girl", nameEn: "Little Girl", persona: "a sweet, curious little girl", portrait: "char-girl.png", sceneId: "girl-outdoor",
       items: [
