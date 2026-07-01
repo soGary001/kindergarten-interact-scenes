@@ -52,7 +52,7 @@ async function main(): Promise<void> {
   const voiceByCharacter: Record<string, string> = {
     boy: "An energetic, cheerful young boy. Bright, playful, lively tone.",
     girl: "A sweet, curious little girl. Light, gentle, happy tone.",
-    grandpa: "A warm, kind elderly grandfather. Slow, soft, gentle tone.",
+    grandpa: "A warm elderly grandfather. Speaks slowly and very clearly, crisp and easy to understand, gentle and kind, not mumbled.",
     mom: "A kind, gentle adult woman. Soft, warm, caring tone.",
     brother: "A clear, cheerful young boy. Speaks slowly and very clearly, crisp and easy to understand, friendly and bright.",
     sister: "A happy young girl. Light, sweet, lively tone.",
